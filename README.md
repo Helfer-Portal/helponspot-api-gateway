@@ -1,0 +1,2 @@
+# HelpOnSpot API gateway
+
