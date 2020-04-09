@@ -1,0 +1,370 @@
+openapi: 3.0.2
+info:
+  title: HelpOnSpot API
+  description: This is the API documentation for the HelpOnSport backend.
+  version: '0.1'
+servers:
+  - url: /api
+externalDocs:
+  description: Github
+  url: 'https://github.com/Helfer-Portal'
+tags:
+  - name: User
+  - name: Organisation
+  - name: Request
+  - name: Project
+paths:
+  /user:
+    get:
+      summary: Returns all users
+      parameters: []
+      tags:
+        - User
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/user'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          description: Error while getting users
+    post:
+      summary: Creates a user
+      description: Creates a user.
+      tags:
+        - User
+      requestBody:
+        description: Contains the user information
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user'
+      responses:
+        '201':
+          description: Returns the newly created user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          description: Error while creating a user
+  /user/{id}:
+    get:
+      summary: Returns a user by id
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID of the user to get
+      tags:
+       - User
+      responses:
+        '200':
+          description: Get successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          description: Error while getting a user from database
+    delete:
+      summary: Deletes a user by id
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID of the user to get
+      tags:
+       - User
+      responses:
+        '200':
+          description: Deletion successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          description: Error while getting a user from database
+  /organisation:
+    get:
+      summary: Returns all organisations
+      parameters: []
+      tags:
+        - Organisation
+      responses:
+          '200':
+            description: List of organisations
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/organisation'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '500':
+            description: Error while getting organisations
+    post:
+      summary: Creates an organization
+      parameters: []
+      tags:
+        - Organisation
+      responses:
+          '200':
+            description: Created organisations
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/organisation'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '500':
+            description: Error while getting organisations
+  /organisation/{id}:
+    get:
+      summary: Returns an organisation
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID of the organisation to get
+      tags:
+        - Organisation
+      responses:
+          '200':
+            description: Organisation
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/organisation'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '500':
+            description: Error while getting organisation
+    delete:
+      summary: Deletes an organisation
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID of the organisation to delete
+      tags:
+        - Organisation
+      responses:
+          '200':
+            description: Organisation
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/organisation'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '500':
+            description: Error while getting organisation
+  /request:
+    get:
+      summary: Returns all requests
+      parameters: []
+      tags:
+       - Request
+      responses:
+        '200':
+          description: List of requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/request'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          description: Error while getting requests
+    post:
+      summary: Create a request
+      parameters: []
+      tags:
+       - Request
+      responses:
+        '200':
+          description: Created request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/request'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          description: Error while creating request
+  /request/{id}:
+    get:
+      summary: Returns a request by id
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: ID of the request to get
+      tags:
+       - Request
+      responses:
+        '200':
+          description: Returned request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/request'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          description: Error while getting request
+    delete:
+      summary: Deletes a request by id
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: ID of the request to get
+      tags:
+       - Request
+      responses:
+        '200':
+          description: Deleted request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/request'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          description: Error while deleting request
+components:
+  responses:
+    BadRequest:
+      description: A required parameter is missing or invalid
+    Unauthorized:
+      description: The provided credentials are invalid
+    Forbidden:
+      description: Insufficient permissions to access the specified resource
+    NotFound:
+      description: Invalid parameter in path
+  schemas:
+    user:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          description: "Unique ID"
+          example: 123
+        name:
+          type: "string"
+          description: "Last name"
+          example: "Doe"
+        surname:
+          type: "string"
+          description: "First name"
+          example: "John"
+        email:
+          type: "string"
+          description: "Email of user"
+          example: "johndoe@mail.com"
+        create_time:
+          type: "integer"
+          description: "create timestamp"
+          example: "1234567"
+        address:
+          $ref: '#/components/schemas/address'
+        quality:
+          type: "array"
+          items:
+            type: "string"
+            example: "physician"
+        requests:
+          type: "array"
+          items:
+            $ref: '#/components/schemas/request'
+    organisation:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          description: "Unique ID"
+          example: 123
+        name:
+          type: "string"
+          description: "Organization name"
+          example: "John Doe Inc."
+        logoPath:
+          type: "string"
+          description: "Path to logo"
+        address:
+          $ref: '#/components/schemas/address'
+        projects:
+          type: "array"
+          items:
+            $ref: '#/components/schemas/project'
+    address:
+      type: "object"
+      properties:
+        street:
+          type: "string"
+        hn:
+          type: "string"
+        zip:
+          type: "string"
+        city:
+          type: "string"
+        country:
+          type: "string"
+    request:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          description: "Unique ID"
+          example: 123
+        isActive:
+          type: "integer"
+        start:
+          type: "string"
+        end:
+          type: "string"
+        address:
+          $ref: '#/components/schemas/address'
+        project:
+          $ref: '#/components/schemas/project'
+    project:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          description: "Unique ID"
+          example: 123
+        name:
+          type: "string"
+          description: "Description of project"
