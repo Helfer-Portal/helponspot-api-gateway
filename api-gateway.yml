@@ -67,7 +67,7 @@ paths:
           required: true
           description: ID of the user to get
       tags:
-       - User
+        - User
       responses:
         '200':
           description: Get successful
@@ -89,7 +89,7 @@ paths:
           required: true
           description: ID of the user to get
       tags:
-       - User
+        - User
       responses:
         '200':
           description: Deletion successful
@@ -101,6 +101,51 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '500':
           description: Error while getting a user from database
+  /user/{id}/profile:
+    get:
+      summary: Returns a user's profile
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID of the user's profile to get
+      tags:
+        - User
+      responses:
+        '200':
+          description: Get successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/profile'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          description: Error while getting a user from database
+    put:
+      summary: Update a user's profile
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID of the user's profile to get
+      tags:
+        - User
+      responses:
+        '200':
+          description: Get successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/profile'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          description: Error while getting a user from database
   /organisation:
     get:
       summary: Returns all organisations
@@ -108,36 +153,36 @@ paths:
       tags:
         - Organisation
       responses:
-          '200':
-            description: List of organisations
-            content:
-              application/json:
-                schema:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/organisation'
-          '400':
-            $ref: '#/components/responses/BadRequest'
-          '500':
-            description: Error while getting organisations
+        '200':
+          description: List of organisations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/organisation'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          description: Error while getting organisations
     post:
       summary: Creates an organization
       parameters: []
       tags:
         - Organisation
       responses:
-          '200':
-            description: Created organisations
-            content:
-              application/json:
-                schema:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/organisation'
-          '400':
-            $ref: '#/components/responses/BadRequest'
-          '500':
-            description: Error while getting organisations
+        '200':
+          description: Created organisations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/organisation'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          description: Error while getting organisations
   /organisation/{id}:
     get:
       summary: Returns an organisation
@@ -151,16 +196,16 @@ paths:
       tags:
         - Organisation
       responses:
-          '200':
-            description: Organisation
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/organisation'
-          '400':
-            $ref: '#/components/responses/BadRequest'
-          '500':
-            description: Error while getting organisation
+        '200':
+          description: Organisation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/organisation'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          description: Error while getting organisation
     delete:
       summary: Deletes an organisation
       parameters:
@@ -173,22 +218,22 @@ paths:
       tags:
         - Organisation
       responses:
-          '200':
-            description: Organisation
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/organisation'
-          '400':
-            $ref: '#/components/responses/BadRequest'
-          '500':
-            description: Error while getting organisation
+        '200':
+          description: Organisation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/organisation'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          description: Error while getting organisation
   /request:
     get:
       summary: Returns all requests
       parameters: []
       tags:
-       - Request
+        - Request
       responses:
         '200':
           description: List of requests
@@ -206,7 +251,7 @@ paths:
       summary: Create a request
       parameters: []
       tags:
-       - Request
+        - Request
       responses:
         '200':
           description: Created request
@@ -222,14 +267,14 @@ paths:
     get:
       summary: Returns a request by id
       parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-        required: true
-        description: ID of the request to get
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID of the request to get
       tags:
-       - Request
+        - Request
       responses:
         '200':
           description: Returned request
@@ -244,14 +289,14 @@ paths:
     delete:
       summary: Deletes a request by id
       parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-        required: true
-        description: ID of the request to get
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID of the request to get
       tags:
-       - Request
+        - Request
       responses:
         '200':
           description: Deleted request
@@ -297,17 +342,13 @@ components:
           type: "integer"
           description: "create timestamp"
           example: "1234567"
-        address:
-          $ref: '#/components/schemas/address'
-        quality:
-          type: "array"
-          items:
-            type: "string"
-            example: "physician"
-        requests:
-          type: "array"
-          items:
-            $ref: '#/components/schemas/request'
+    profile:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          description: "Unique ID"
+          example: 123
     organisation:
       type: "object"
       properties:
