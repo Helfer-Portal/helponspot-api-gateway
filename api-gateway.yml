@@ -45,7 +45,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/user"
+              $ref: "#/components/schemas/profile"
         required: true
       responses:
         400:
@@ -59,7 +59,173 @@ paths:
           content:
             application/json:
               schema:
+                allOf:
+                  - $ref: "#/components/schemas/id"
+                  - $ref: "#/components/schemas/profile"
+  /users/{id}:
+    get:
+      tags:
+        - "User"
+      summary: "Returns a user by id"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of the user to get"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        400:
+          description: "A required parameter is missing or invalid"
+          content: {}
+        500:
+          description: "Error while getting a user from database"
+          content: {}
+        200:
+          description: "Get successful"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/id"
+                  - $ref: "#/components/schemas/user"
+    delete:
+      tags:
+        - "User"
+      summary: "Deletes a user by id"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of the user to get"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        400:
+          description: "A required parameter is missing or invalid"
+          content: {}
+        500:
+          description: "Error while getting a user from database"
+          content: {}
+        200:
+          description: "Deletion successful"
+          content:
+            application/json:
+              schema:
                 $ref: "#/components/schemas/user"
+  /users/{id}/profile:
+    get:
+      tags:
+        - "User"
+      summary: "Returns a user's profile"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of the user's profile to get"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        400:
+          description: "A required parameter is missing or invalid"
+          content: {}
+        500:
+          description: "Error while getting a user from database"
+          content: {}
+        200:
+          description: "Get successful"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/profile"
+    patch:
+      tags:
+        - "User"
+      summary: "Update a user's profile"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of the user's profile to get"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        400:
+          description: "A required parameter is missing or invalid"
+          content: {}
+        500:
+          description: "Error while getting a user from database"
+          content: {}
+        200:
+          description: "Get successful"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/profile"
+  /users/{id}/requests:
+    get:
+      tags:
+        - "User"
+      summary: "Returns requests, which fit to a user (travelling distance and other filters)"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of the user"
+          required: true
+          schema:
+            type: "string"
+        - in: query
+          name: requestType
+          schema:
+            type: string
+            enum: [accepted, pending, all, declined, matched]
+          description: The request type
+        - in: query
+          name: radius
+          schema:
+            type: integer
+          description: Radius of search
+        - in: query
+          name: location
+          schema:
+            $ref: "#/components/schemas/location"
+          description: Custom location
+      responses:
+        400:
+          description: "A required parameter is missing or invalid"
+          content: {}
+        500:
+          description: "Error while getting a user from database"
+          content: {}
+        200:
+          description: "Get successful"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/request"
+
+  /requests:
+    post:
+      tags:
+        - "Request"
+      summary: "Create a request"
+      responses:
+        400:
+          description: "A required parameter is missing or invalid"
+          content: {}
+        500:
+          description: "Error while creating request"
+          content: {}
+        200:
+          description: "Created request"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/id"
+                  - $ref: "#/components/schemas/request"
   /requests/{requestId}:
     get:
       tags:
@@ -109,60 +275,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/request"
-  /users/{id}:
-    get:
-      tags:
-        - "User"
-      summary: "Returns a user by id"
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "ID of the user to get"
-          required: true
-          schema:
-            type: "string"
-      responses:
-        400:
-          description: "A required parameter is missing or invalid"
-          content: {}
-        500:
-          description: "Error while getting a user from database"
-          content: {}
-        200:
-          description: "Get successful"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/user"
-    delete:
-      tags:
-        - "User"
-      summary: "Deletes a user by id"
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "ID of the user to get"
-          required: true
-          schema:
-            type: "string"
-      responses:
-        400:
-          description: "A required parameter is missing or invalid"
-          content: {}
-        500:
-          description: "Error while getting a user from database"
-          content: {}
-        200:
-          description: "Deletion successful"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/user"
-  /requests/{requestId}/participants:
+  /requests/{requestId}/volunteers:
     get:
       tags:
         - "Request"
-      summary: "Return participants for one request"
+      summary: "Return all matched volunteers for one request"
       parameters:
         - name: "requestId"
           in: "path"
@@ -182,7 +299,145 @@ paths:
           content:
             application/json:
               schema:
+                type: "array"
+                items:
+                  allOf:
+                    - $ref: "#/components/schemas/id"
+                    - $ref: "#/components/schemas/user"
+                    - $ref: "#/components/schemas/responseStatus"
+  /requests/{requestId}/volunteers/{userId}:
+    put:
+      tags:
+        - "Request"
+      summary: "Add user response to a request"
+      parameters:
+        - name: "userId"
+          in: "path"
+          description: "ID of the request to get"
+          required: true
+          schema:
+            type: "string"
+        - name: "requestId"
+          in: "path"
+          description: "ID of the request to get"
+          required: true
+          schema:
+            type: "string"
+        - name: "response"
+          in: "path"
+          description: "User response"
+          required: true
+          schema:
+            type: string
+            enum: [accept,decline]
+      responses:
+        400:
+          description: "A required parameter is missing or invalid"
+          content: {}
+        500:
+          description: "Error while getting request"
+          content: {}
+        200:
+          description: "Updated request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/request"
+    delete:
+      tags:
+        - "Request"
+      summary: "Remove participant from request"
+      parameters:
+        - name: "userId"
+          in: "path"
+          description: "ID of the request to get"
+          required: true
+          schema:
+            type: "string"
+        - name: "requestId"
+          in: "path"
+          description: "ID of the request to get"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        400:
+          description: "A required parameter is missing or invalid"
+          content: {}
+        500:
+          description: "Error while getting request"
+          content: {}
+        200:
+          description: "Returned request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/request"
+  /requests/{id}/invite:
+    post:
+      tags:
+        - "Request"
+      summary: "Invite volunteers"
+      description: "Invite all matching volunteers to a request"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of the request to invite to"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        description: "Array of volunteers, which will be invited"
+        content:
+          application/json:
+            schema:
+              type: "array"
+              items:
                 $ref: "#/components/schemas/user"
+      responses:
+        400:
+          description: "A required parameter is missing or invalid"
+          content: {}
+        500:
+          description: "Error while sending invitations"
+          content: {}
+        200:
+          description: "invitation sent"
+  /organisations:
+    get:
+      tags:
+        - "Organisation"
+      summary: "Returns all organisations"
+      responses:
+        400:
+          description: "A required parameter is missing or invalid"
+          content: {}
+        500:
+          description: "Error while getting organisations"
+          content: {}
+        200:
+          description: "List of organisations"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArrayOforganisation"
+    post:
+      tags:
+        - "Organisation"
+      summary: "Creates an organization"
+      responses:
+        400:
+          description: "A required parameter is missing or invalid"
+          content: {}
+        500:
+          description: "Error while getting organisations"
+          content: {}
+        200:
+          description: "Created organisations"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArrayOforganisation"
   /organisations/{id}:
     get:
       tags:
@@ -232,195 +487,41 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/organisation"
-  /users/{id}/profile:
-    get:
-      tags:
-        - "User"
-      summary: "Returns a user's profile"
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "ID of the user's profile to get"
-          required: true
-          schema:
-            type: "string"
-      responses:
-        400:
-          description: "A required parameter is missing or invalid"
-          content: {}
-        500:
-          description: "Error while getting a user from database"
-          content: {}
-        200:
-          description: "Get successful"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/profile"
-    put:
-      tags:
-        - "User"
-      summary: "Update a user's profile"
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "ID of the user's profile to get"
-          required: true
-          schema:
-            type: "string"
-      responses:
-        400:
-          description: "A required parameter is missing or invalid"
-          content: {}
-        500:
-          description: "Error while getting a user from database"
-          content: {}
-        200:
-          description: "Get successful"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/profile"
-  /requests:
-    get:
-      tags:
-        - "Request"
-      summary: "Returns all requests"
-      responses:
-        400:
-          description: "A required parameter is missing or invalid"
-          content: {}
-        500:
-          description: "Error while getting requests"
-          content: {}
-        200:
-          description: "List of requests"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ArrayOfrequest"
-    post:
-      tags:
-        - "Request"
-      summary: "Create a request"
-      responses:
-        400:
-          description: "A required parameter is missing or invalid"
-          content: {}
-        500:
-          description: "Error while creating request"
-          content: {}
-        200:
-          description: "Created request"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/request"
-  /requests/{requestId}/participants/{userId}:
-    put:
-      tags:
-        - "Request"
-      summary: "Add participant to request"
-      parameters:
-        - name: "userId"
-          in: "path"
-          description: "ID of the request to get"
-          required: true
-          schema:
-            type: "string"
-        - name: "requestId"
-          in: "path"
-          description: "ID of the request to get"
-          required: true
-          schema:
-            type: "string"
-      responses:
-        400:
-          description: "A required parameter is missing or invalid"
-          content: {}
-        500:
-          description: "Error while getting request"
-          content: {}
-        200:
-          description: "Updated request"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/request"
-    delete:
-      tags:
-        - "Request"
-      summary: "Remove participant from request"
-      parameters:
-        - name: "userId"
-          in: "path"
-          description: "ID of the request to get"
-          required: true
-          schema:
-            type: "string"
-        - name: "requestId"
-          in: "path"
-          description: "ID of the request to get"
-          required: true
-          schema:
-            type: "string"
-      responses:
-        400:
-          description: "A required parameter is missing or invalid"
-          content: {}
-        500:
-          description: "Error while getting request"
-          content: {}
-        200:
-          description: "Returned request"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/request"
-  /organisations:
+  /organisations/{id}/requests:
     get:
       tags:
         - "Organisation"
-      summary: "Returns all organisations"
+      summary: "Returns all request of an organisation"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of the organisation"
+          required: true
+          schema:
+            type: "string"
       responses:
-        400:
-          description: "A required parameter is missing or invalid"
-          content: {}
-        500:
-          description: "Error while getting organisations"
-          content: {}
         200:
-          description: "List of organisations"
+          description: "Requests"
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ArrayOforganisation"
-    post:
-      tags:
-        - "Organisation"
-      summary: "Creates an organization"
-      responses:
-        400:
-          description: "A required parameter is missing or invalid"
-          content: {}
-        500:
-          description: "Error while getting organisations"
-          content: {}
-        200:
-          description: "Created organisations"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ArrayOforganisation"
+                type: "array"
+                items:
+                  allOf:
+                    - $ref: "#/components/schemas/id"
+                    - $ref: "#/components/schemas/request"
 components:
   schemas:
-    request:
+    id:
       type: "object"
       properties:
         id:
           type: "integer"
           description: "Unique ID"
           format: "int32"
+    request:
+      type: "object"
+      properties:
         isActive:
           type: "integer"
           format: "int32"
@@ -437,25 +538,20 @@ components:
       properties:
         street:
           type: "string"
-        hn:
+        houseNumber:
           type: "string"
-        zip:
+        postalCode:
           type: "string"
         city:
           type: "string"
         country:
           type: "string"
+        location:
+          $ref: "#/components/schemas/location"
     ArrayOfrequest:
       type: "array"
       items:
         $ref: "#/components/schemas/request"
-    profile:
-      type: "object"
-      properties:
-        id:
-          type: "integer"
-          description: "Unique ID"
-          format: "int32"
     organisation:
       type: "object"
       properties:
@@ -492,24 +588,65 @@ components:
     ArrayOfuser:
       type: "array"
       items:
-        $ref: "#/components/schemas/user"
+        allOf:
+          - $ref: "#/components/schemas/id"
+          - $ref: "#/components/schemas/user"
     user:
       type: "object"
       properties:
-        id:
-          type: "integer"
-          description: "Unique ID"
-          format: "int32"
-        name:
+        lastName:
           type: "string"
           description: "Last name"
-        surname:
+        firstName:
           type: "string"
           description: "First name"
         email:
           type: "string"
           description: "Email of user"
-        create_time:
-          type: "integer"
-          description: "create timestamp"
-          format: "int32"
+    profile:
+      type: "object"
+      required:
+        - email
+        - lastName
+        - firstName
+        - qualities
+      properties:
+        lastName:
+          type: "string"
+          description: "Last name"
+        firstName:
+          type: "string"
+          description: "First name"
+        email:
+          type: "string"
+          description: "Email of user"
+        isGPSLocationAllowed:
+          type: "boolean"
+          description: "Boolean for GPS location"
+        address:
+          $ref: "#/components/schemas/address"
+        qualities:
+          type: "array"
+          description: "Array of user qualities"
+          items:
+            type: "string"
+        avatar:
+          type: "string"
+          description: "URL to user avatar"
+    location:
+      type: "object"
+      properties:
+        latitude:
+          type: "string"
+          description: "Latitude"
+        longitude:
+          type: "string"
+          description: "Longitude"
+    responseStatus:
+      type: "object"
+      properties:
+        reponseStatus:
+          type: "string"
+          description: "User reponse to request"
+          enum: [accepted, pending, declined]
+
