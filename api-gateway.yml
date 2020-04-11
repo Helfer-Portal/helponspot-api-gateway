@@ -15,7 +15,7 @@ tags:
   - name: "User"
   - name: "Organisation"
   - name: "Request"
-  - name: "Project"
+  - name: "Qualifications"
 paths:
   /users:
     get:
@@ -510,6 +510,21 @@ paths:
                   allOf:
                     - $ref: "#/components/schemas/id"
                     - $ref: "#/components/schemas/request"
+  /qualifications:
+    get:
+      tags:
+        - "Qualifications"
+      summary: "Returns all qualifications"
+      responses:
+        200:
+          description: "Array of qualifications"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  type: "string"
+                  example: "Drivers licence"
 components:
   schemas:
     id:
