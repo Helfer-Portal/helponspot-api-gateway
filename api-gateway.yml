@@ -34,7 +34,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ArrayOfuser"
+                type: "array"
+                items:
+                  allOf:
+                    - $ref: "#/components/schemas/id"
+                    - $ref: "#/components/schemas/user"
     post:
       tags:
         - "User"
@@ -62,13 +66,13 @@ paths:
                 allOf:
                   - $ref: "#/components/schemas/id"
                   - $ref: "#/components/schemas/profile"
-  /users/{id}:
+  /users/{userId}:
     get:
       tags:
         - "User"
       summary: "Returns a user by id"
       parameters:
-        - name: "id"
+        - name: "userId"
           in: "path"
           description: "ID of the user to get"
           required: true
@@ -94,7 +98,7 @@ paths:
         - "User"
       summary: "Deletes a user by id"
       parameters:
-        - name: "id"
+        - name: "userId"
           in: "path"
           description: "ID of the user to get"
           required: true
@@ -113,13 +117,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/user"
-  /users/{id}/profile:
+  /users/{userId}/profile:
     get:
       tags:
         - "User"
       summary: "Returns a user's profile"
       parameters:
-        - name: "id"
+        - name: "userId"
           in: "path"
           description: "ID of the user's profile to get"
           required: true
@@ -143,7 +147,7 @@ paths:
         - "User"
       summary: "Update a user's profile"
       parameters:
-        - name: "id"
+        - name: "userId"
           in: "path"
           description: "ID of the user's profile to get"
           required: true
@@ -162,13 +166,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/profile"
-  /users/{id}/requests:
+  /users/{userId}/requests:
     get:
       tags:
         - "User"
       summary: "Returns requests, which fit to a user (travelling distance and other filters)"
       parameters:
-        - name: "id"
+        - name: "userId"
           in: "path"
           description: "ID of the user"
           required: true
@@ -373,14 +377,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/request"
-  /requests/{id}/invite:
+  /requests/{requestId}/invite:
     post:
       tags:
         - "Request"
       summary: "Invite volunteers"
       description: "Invite all matching volunteers to a request"
       parameters:
-        - name: "id"
+        - name: "requestId"
           in: "path"
           description: "ID of the request to invite to"
           required: true
@@ -420,7 +424,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ArrayOforganisation"
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/organisation"
     post:
       tags:
         - "Organisation"
@@ -437,14 +443,14 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ArrayOforganisation"
-  /organisations/{id}:
+                $ref: "#/components/schemas/organisation"
+  /organisations/{organisationId}:
     get:
       tags:
         - "Organisation"
       summary: "Returns an organisation"
       parameters:
-        - name: "id"
+        - name: "organisationId"
           in: "path"
           description: "ID of the organisation to get"
           required: true
@@ -468,7 +474,7 @@ paths:
         - "Organisation"
       summary: "Deletes an organisation"
       parameters:
-        - name: "id"
+        - name: "organisationId"
           in: "path"
           description: "ID of the organisation to delete"
           required: true
@@ -487,13 +493,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/organisation"
-  /organisations/{id}/requests:
+  /organisations/{organisationId}/requests:
     get:
       tags:
         - "Organisation"
       summary: "Returns all request of an organisation"
       parameters:
-        - name: "id"
+        - name: "organisationId"
           in: "path"
           description: "ID of the organisation"
           required: true
@@ -525,6 +531,9 @@ paths:
                 items:
                   type: "string"
                   example: "Drivers licence"
+        500:
+          description: "Error while getting qualifications"
+          content: {}
 components:
   schemas:
     id:
@@ -563,10 +572,6 @@ components:
           type: "string"
         location:
           $ref: "#/components/schemas/location"
-    ArrayOfrequest:
-      type: "array"
-      items:
-        $ref: "#/components/schemas/request"
     organisation:
       type: "object"
       properties:
@@ -596,16 +601,6 @@ components:
         name:
           type: "string"
           description: "Description of project"
-    ArrayOforganisation:
-      type: "array"
-      items:
-        $ref: "#/components/schemas/organisation"
-    ArrayOfuser:
-      type: "array"
-      items:
-        allOf:
-          - $ref: "#/components/schemas/id"
-          - $ref: "#/components/schemas/user"
     user:
       type: "object"
       properties:
