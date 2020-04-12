@@ -11,10 +11,10 @@
   },
   "servers": [
     {
-      "url": "https://q7trxhcc49.execute-api.eu-central-1.amazonaws.com/{basePath}",
+      "url": "https://js7pyl1b87.execute-api.eu-central-1.amazonaws.com/{basePath}",
       "variables": {
         "basePath": {
-          "default": "test"
+          "default": "dev"
         }
       }
     }
@@ -30,10 +30,55 @@
       "name": "Request"
     },
     {
-      "name": "Project"
+      "name": "Qualifications"
     }
   ],
   "paths": {
+    "/requests/{requestId}/invite": {
+      "post": {
+        "tags": [
+          "Request"
+        ],
+        "summary": "Invite volunteers",
+        "description": "Invite all matching volunteers to a request",
+        "parameters": [
+          {
+            "name": "requestId",
+            "in": "path",
+            "description": "ID of the request to invite to",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Array of volunteers, which will be invited",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArrayOfuser"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "invitation sent",
+            "content": {}
+          },
+          "400": {
+            "description": "A required parameter is missing or invalid",
+            "content": {}
+          },
+          "500": {
+            "description": "Error while sending invitations",
+            "content": {}
+          }
+        }
+      }
+    },
     "/users": {
       "get": {
         "tags": [
@@ -72,7 +117,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/user"
+                "$ref": "#/components/schemas/profile"
               }
             }
           },
@@ -84,7 +129,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/user"
+                  "$ref": "#/components/schemas/profile"
                 }
               }
             }
@@ -100,410 +145,22 @@
         }
       }
     },
-    "/requests/{requestId}": {
-      "get": {
-        "tags": [
-          "Request"
-        ],
-        "summary": "Returns a request by id",
-        "parameters": [
-          {
-            "name": "requestId",
-            "in": "path",
-            "description": "ID of the request to get",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Returned request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/request"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "A required parameter is missing or invalid",
-            "content": {}
-          },
-          "500": {
-            "description": "Error while getting request",
-            "content": {}
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "Request"
-        ],
-        "summary": "Deletes a request by id",
-        "parameters": [
-          {
-            "name": "requestId",
-            "in": "path",
-            "description": "ID of the request to get",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Deleted request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/request"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "A required parameter is missing or invalid",
-            "content": {}
-          },
-          "500": {
-            "description": "Error while deleting request",
-            "content": {}
-          }
-        }
-      }
-    },
-    "/users/{id}": {
-      "get": {
-        "tags": [
-          "User"
-        ],
-        "summary": "Returns a user by id",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of the user to get",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Get successful",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/user"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "A required parameter is missing or invalid",
-            "content": {}
-          },
-          "500": {
-            "description": "Error while getting a user from database",
-            "content": {}
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "User"
-        ],
-        "summary": "Deletes a user by id",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of the user to get",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Deletion successful",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/user"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "A required parameter is missing or invalid",
-            "content": {}
-          },
-          "500": {
-            "description": "Error while getting a user from database",
-            "content": {}
-          }
-        }
-      }
-    },
-    "/requests/{requestId}/participants": {
-      "get": {
-        "tags": [
-          "Request"
-        ],
-        "summary": "Return participants for one request",
-        "parameters": [
-          {
-            "name": "requestId",
-            "in": "path",
-            "description": "ID of the request to get",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Returned request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/user"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "A required parameter is missing or invalid",
-            "content": {}
-          },
-          "500": {
-            "description": "Error while getting request",
-            "content": {}
-          }
-        }
-      }
-    },
-    "/organisations/{id}": {
-      "get": {
-        "tags": [
-          "Organisation"
-        ],
-        "summary": "Returns an organisation",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of the organisation to get",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Organisation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/organisation"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "A required parameter is missing or invalid",
-            "content": {}
-          },
-          "500": {
-            "description": "Error while getting organisation",
-            "content": {}
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "Organisation"
-        ],
-        "summary": "Deletes an organisation",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of the organisation to delete",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Organisation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/organisation"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "A required parameter is missing or invalid",
-            "content": {}
-          },
-          "500": {
-            "description": "Error while getting organisation",
-            "content": {}
-          }
-        }
-      }
-    },
-    "/users/{id}/profile": {
-      "get": {
-        "tags": [
-          "User"
-        ],
-        "summary": "Returns a user's profile",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of the user's profile to get",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Get successful",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/profile"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "A required parameter is missing or invalid",
-            "content": {}
-          },
-          "500": {
-            "description": "Error while getting a user from database",
-            "content": {}
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "User"
-        ],
-        "summary": "Update a user's profile",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of the user's profile to get",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Get successful",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/profile"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "A required parameter is missing or invalid",
-            "content": {}
-          },
-          "500": {
-            "description": "Error while getting a user from database",
-            "content": {}
-          }
-        }
-      }
-    },
-    "/requests": {
-      "get": {
-        "tags": [
-          "Request"
-        ],
-        "summary": "Returns all requests",
-        "responses": {
-          "200": {
-            "description": "List of requests",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ArrayOfrequest"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "A required parameter is missing or invalid",
-            "content": {}
-          },
-          "500": {
-            "description": "Error while getting requests",
-            "content": {}
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "Request"
-        ],
-        "summary": "Create a request",
-        "responses": {
-          "200": {
-            "description": "Created request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/request"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "A required parameter is missing or invalid",
-            "content": {}
-          },
-          "500": {
-            "description": "Error while creating request",
-            "content": {}
-          }
-        }
-      }
-    },
-    "/requests/{requestId}/participants/{userId}": {
+    "/requests/{requestId}/volunteers/{userId}": {
       "put": {
         "tags": [
           "Request"
         ],
-        "summary": "Add participant to request",
+        "summary": "Add user response to a request",
         "parameters": [
+          {
+            "name": "response",
+            "in": "path",
+            "description": "User response",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
           {
             "name": "userId",
             "in": "path",
@@ -591,6 +248,241 @@
         }
       }
     },
+    "/requests/{requestId}": {
+      "get": {
+        "tags": [
+          "Request"
+        ],
+        "summary": "Returns a request by id",
+        "parameters": [
+          {
+            "name": "requestId",
+            "in": "path",
+            "description": "ID of the request to get",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returned request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/request"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "A required parameter is missing or invalid",
+            "content": {}
+          },
+          "500": {
+            "description": "Error while getting request",
+            "content": {}
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Request"
+        ],
+        "summary": "Deletes a request by id",
+        "parameters": [
+          {
+            "name": "requestId",
+            "in": "path",
+            "description": "ID of the request to get",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deleted request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/request"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "A required parameter is missing or invalid",
+            "content": {}
+          },
+          "500": {
+            "description": "Error while deleting request",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/users/{userId}/profile": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Returns a user's profile",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "ID of the user's profile to get",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/profile"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "A required parameter is missing or invalid",
+            "content": {}
+          },
+          "500": {
+            "description": "Error while getting a user from database",
+            "content": {}
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Update a user's profile",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "ID of the user's profile to get",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/profile"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "A required parameter is missing or invalid",
+            "content": {}
+          },
+          "500": {
+            "description": "Error while getting a user from database",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/geopoint": {
+      "post": {
+        "requestBody": {
+          "description": "Contains the user information",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/address"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArrayOflocation"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/requests": {
+      "post": {
+        "tags": [
+          "Request"
+        ],
+        "summary": "Create a request",
+        "responses": {
+          "200": {
+            "description": "Created request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArrayOfrequest"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "A required parameter is missing or invalid",
+            "content": {}
+          },
+          "500": {
+            "description": "Error while creating request",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/qualifications": {
+      "get": {
+        "tags": [
+          "Qualifications"
+        ],
+        "summary": "Returns all qualifications",
+        "responses": {
+          "200": {
+            "description": "Array of qualifications",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArrayOfqualification"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error while getting qualifications",
+            "content": {}
+          }
+        }
+      }
+    },
     "/organisations": {
       "get": {
         "tags": [
@@ -629,7 +521,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ArrayOforganisation"
+                  "$ref": "#/components/schemas/organisation"
                 }
               }
             }
@@ -640,6 +532,291 @@
           },
           "500": {
             "description": "Error while getting organisations",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/users/{userId}/requests": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Returns requests, which fit to a user (travelling distance and other filters)",
+        "parameters": [
+          {
+            "name": "requestType",
+            "in": "query",
+            "description": "The request type",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "ID of the user",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "radius",
+            "in": "query",
+            "description": "Radius of search",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "location",
+            "in": "query",
+            "description": "Custom location",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArrayOfrequest"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "A required parameter is missing or invalid",
+            "content": {}
+          },
+          "500": {
+            "description": "Error while getting a user from database",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/organisations/{organisationId}/requests": {
+      "get": {
+        "tags": [
+          "Organisation"
+        ],
+        "summary": "Returns all request of an organisation",
+        "parameters": [
+          {
+            "name": "organisationId",
+            "in": "path",
+            "description": "ID of the organisation",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArrayOfrequest"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/organisations/{organisationId}": {
+      "get": {
+        "tags": [
+          "Organisation"
+        ],
+        "summary": "Returns an organisation",
+        "parameters": [
+          {
+            "name": "organisationId",
+            "in": "path",
+            "description": "ID of the organisation to get",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Organisation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/organisation"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "A required parameter is missing or invalid",
+            "content": {}
+          },
+          "500": {
+            "description": "Error while getting organisation",
+            "content": {}
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Organisation"
+        ],
+        "summary": "Deletes an organisation",
+        "parameters": [
+          {
+            "name": "organisationId",
+            "in": "path",
+            "description": "ID of the organisation to delete",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Organisation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/organisation"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "A required parameter is missing or invalid",
+            "content": {}
+          },
+          "500": {
+            "description": "Error while getting organisation",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/users/{userId}": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Returns a user by id",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "ID of the user to get",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/user"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "A required parameter is missing or invalid",
+            "content": {}
+          },
+          "500": {
+            "description": "Error while getting a user from database",
+            "content": {}
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Deletes a user by id",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "ID of the user to get",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deletion successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/user"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "A required parameter is missing or invalid",
+            "content": {}
+          },
+          "500": {
+            "description": "Error while getting a user from database",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/requests/{requestId}/volunteers": {
+      "get": {
+        "tags": [
+          "Request"
+        ],
+        "summary": "Return all matched volunteers for one request",
+        "parameters": [
+          {
+            "name": "requestId",
+            "in": "path",
+            "description": "ID of the request to get",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returned request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArrayOfresponseStatus"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "A required parameter is missing or invalid",
+            "content": {}
+          },
+          "500": {
+            "description": "Error while getting request",
             "content": {}
           }
         }
@@ -668,22 +845,24 @@
           },
           "address": {
             "$ref": "#/components/schemas/address"
-          },
-          "project": {
-            "$ref": "#/components/schemas/project"
           }
         }
       },
       "address": {
         "type": "object",
         "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique ID",
+            "format": "int32"
+          },
           "street": {
             "type": "string"
           },
-          "hn": {
+          "houseNumber": {
             "type": "string"
           },
-          "zip": {
+          "postalCode": {
             "type": "string"
           },
           "city": {
@@ -691,22 +870,56 @@
           },
           "country": {
             "type": "string"
+          },
+          "location": {
+            "$ref": "#/components/schemas/location"
           }
         }
       },
-      "ArrayOfrequest": {
+      "ArrayOfresponseStatus": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/request"
+          "$ref": "#/components/schemas/responseStatus"
         }
       },
       "profile": {
+        "required": [
+          "email",
+          "firstName",
+          "lastName",
+          "qualities"
+        ],
         "type": "object",
         "properties": {
-          "id": {
-            "type": "integer",
-            "description": "Unique ID",
-            "format": "int32"
+          "lastName": {
+            "type": "string",
+            "description": "Last name"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "First name"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email of user"
+          },
+          "isGPSLocationAllowed": {
+            "type": "boolean",
+            "description": "Boolean for GPS location"
+          },
+          "address": {
+            "$ref": "#/components/schemas/address"
+          },
+          "qualities": {
+            "type": "array",
+            "description": "Array of user qualities",
+            "items": {
+              "type": "string"
+            }
+          },
+          "avatar": {
+            "type": "string",
+            "description": "URL to user avatar"
           }
         }
       },
@@ -729,25 +942,66 @@
           "address": {
             "$ref": "#/components/schemas/address"
           },
-          "projects": {
+          "requests": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/project"
+              "$ref": "#/components/schemas/request"
             }
           }
         }
       },
-      "project": {
+      "responseStatus": {
         "type": "object",
         "properties": {
-          "id": {
+          "userId": {
             "type": "integer",
-            "description": "Unique ID",
             "format": "int32"
+          },
+          "reponseStatus": {
+            "type": "string",
+            "description": "User response to request",
+            "enum": [
+              "accepted",
+              "pending",
+              "declined"
+            ]
+          }
+        }
+      },
+      "ArrayOfqualification": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/qualification"
+        }
+      },
+      "qualification": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
           },
           "name": {
             "type": "string",
-            "description": "Description of project"
+            "description": "Translated name"
+          }
+        }
+      },
+      "ArrayOfrequest": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/request"
+        }
+      },
+      "location": {
+        "type": "object",
+        "properties": {
+          "latitude": {
+            "type": "string",
+            "description": "Latitude"
+          },
+          "longitude": {
+            "type": "string",
+            "description": "Longitude"
           }
         }
       },
@@ -755,6 +1009,12 @@
         "type": "array",
         "items": {
           "$ref": "#/components/schemas/organisation"
+        }
+      },
+      "ArrayOflocation": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/location"
         }
       },
       "ArrayOfuser": {
@@ -771,22 +1031,17 @@
             "description": "Unique ID",
             "format": "int32"
           },
-          "name": {
+          "lastName": {
             "type": "string",
             "description": "Last name"
           },
-          "surname": {
+          "firstName": {
             "type": "string",
             "description": "First name"
           },
           "email": {
             "type": "string",
             "description": "Email of user"
-          },
-          "create_time": {
-            "type": "integer",
-            "description": "create timestamp",
-            "format": "int32"
           }
         }
       }
