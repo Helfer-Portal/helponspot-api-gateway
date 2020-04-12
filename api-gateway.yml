@@ -10,7 +10,7 @@ servers:
   - url: "https://q7trxhcc49.execute-api.eu-central-1.amazonaws.com/{basePath}"
     variables:
       basePath:
-        default: "/test"
+        default: "dev"
 tags:
   - name: "User"
   - name: "Organisation"
@@ -522,6 +522,26 @@ paths:
         500:
           description: "Error while getting qualifications"
           content: {}
+
+  /geopoint:
+    post:
+      requestBody:
+        description: "Contains the user information"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/address"
+        required: true
+      responses:
+        200:
+          description: "200 response"
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/location"
+        500:
+          description: 500 response
 components:
   schemas:
     request:
