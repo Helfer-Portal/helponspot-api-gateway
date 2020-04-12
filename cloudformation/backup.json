@@ -1,0 +1,770 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Resources": {
+    "vpc0cabd7ab3e1f989d4": {
+      "Type": "AWS::EC2::VPC",
+      "Properties": {
+        "CidrBlock": "10.10.10.0/24",
+        "InstanceTenancy": "default",
+        "EnableDnsSupport": "true",
+        "EnableDnsHostnames": "true",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "CloudformerVPC"
+          }
+        ]
+      }
+    },
+    "vpcc013d8aa": {
+      "Type": "AWS::EC2::VPC",
+      "Properties": {
+        "CidrBlock": "172.31.0.0/16",
+        "InstanceTenancy": "default",
+        "EnableDnsSupport": "true",
+        "EnableDnsHostnames": "true"
+      }
+    },
+    "subnet0655241bc78badd8d": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.10.10.0/24",
+        "AvailabilityZone": "eu-central-1a",
+        "VpcId": {
+          "Ref": "vpc0cabd7ab3e1f989d4"
+        }
+      }
+    },
+    "subnet0419aa6e": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "172.31.16.0/20",
+        "AvailabilityZone": "eu-central-1a",
+        "VpcId": {
+          "Ref": "vpcc013d8aa"
+        }
+      }
+    },
+    "subnetfd947d81": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "172.31.32.0/20",
+        "AvailabilityZone": "eu-central-1b",
+        "VpcId": {
+          "Ref": "vpcc013d8aa"
+        }
+      }
+    },
+    "subnet0184784d": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "172.31.0.0/20",
+        "AvailabilityZone": "eu-central-1c",
+        "VpcId": {
+          "Ref": "vpcc013d8aa"
+        }
+      }
+    },
+    "igw07a6bc207fabbfe02": {
+      "Type": "AWS::EC2::InternetGateway",
+      "Properties": {
+      }
+    },
+    "igwfa24ea91": {
+      "Type": "AWS::EC2::InternetGateway",
+      "Properties": {
+      }
+    },
+    "dopt1a35fe70": {
+      "Type": "AWS::EC2::DHCPOptions",
+      "Properties": {
+        "DomainName": "eu-central-1.compute.internal",
+        "DomainNameServers": [
+          "AmazonProvidedDNS"
+        ]
+      }
+    },
+    "acl090dbb9cecd05fc82": {
+      "Type": "AWS::EC2::NetworkAcl",
+      "Properties": {
+        "VpcId": {
+          "Ref": "vpc0cabd7ab3e1f989d4"
+        }
+      }
+    },
+    "aclabe783c1": {
+      "Type": "AWS::EC2::NetworkAcl",
+      "Properties": {
+        "VpcId": {
+          "Ref": "vpcc013d8aa"
+        }
+      }
+    },
+    "rtb0bb04ff44a5f7bc3a": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "vpc0cabd7ab3e1f989d4"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "CloudformerVPCRouteTable"
+          }
+        ]
+      }
+    },
+    "rtb0ba4252d55a19449a": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "vpc0cabd7ab3e1f989d4"
+        }
+      }
+    },
+    "rtbeacd8080": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "vpcc013d8aa"
+        }
+      }
+    },
+    "MedicalReserve": {
+      "Type": "AWS::ElasticBeanstalk::Application",
+      "Properties": {
+        "Description": "Application created from the EB CLI using \"eb init\""
+      }
+    },
+    "MedicalTaskForce": {
+      "Type": "AWS::ElasticBeanstalk::Application",
+      "Properties": {
+        "Description": "Application created from the EB CLI using \"eb init\""
+      }
+    },
+    "versionapp1b9820032218505964": {
+      "Type": "AWS::ElasticBeanstalk::ApplicationVersion",
+      "Properties": {
+        "ApplicationName": {
+          "Ref": "MedicalReserve"
+        },
+        "Description": "Update Volunteer if same google id is used",
+        "SourceBundle": {
+          "S3Bucket": "elasticbeanstalk-eu-central-1-198891906952",
+          "S3Key": "MedicalReserve/app-1b98-200322_185059.jar"
+        }
+      }
+    },
+    "envprod1": {
+      "Type": "AWS::ElasticBeanstalk::Environment",
+      "Properties": {
+        "ApplicationName": {
+          "Ref": "MedicalReserve"
+        },
+        "Description": "Environment created from the EB CLI using \"eb create\"",
+        "SolutionStackName": "64bit Amazon Linux 2018.03 v2.10.3 running Java 8",
+        "VersionLabel": {
+          "Ref": "versionapp1b9820032218505964"
+        },
+        "Tier": {
+          "Name": "WebServer",
+          "Type": "Standard",
+          "Version": "1.0"
+        },
+        "OptionSettings": [
+          {
+            "Namespace": "aws:autoscaling:launchconfiguration",
+            "OptionName": "IamInstanceProfile",
+            "Value": "aws-elasticbeanstalk-ec2-role"
+          },
+          {
+            "Namespace": "aws:autoscaling:launchconfiguration",
+            "OptionName": "ImageId",
+            "Value": "ami-0e84e55bb2a4dcb51"
+          },
+          {
+            "Namespace": "aws:autoscaling:launchconfiguration",
+            "OptionName": "SecurityGroups",
+            "Value": "awseb-e-iwxpnytz3v-stack-AWSEBSecurityGroup-516C8D4DGNCN"
+          },
+          {
+            "Namespace": "aws:autoscaling:trigger",
+            "OptionName": "UpperThreshold",
+            "Value": "6000000"
+          },
+          {
+            "Namespace": "aws:autoscaling:updatepolicy:rollingupdate",
+            "OptionName": "MaxBatchSize",
+            "Value": "1"
+          },
+          {
+            "Namespace": "aws:autoscaling:updatepolicy:rollingupdate",
+            "OptionName": "MinInstancesInService",
+            "Value": "1"
+          },
+          {
+            "Namespace": "aws:autoscaling:updatepolicy:rollingupdate",
+            "OptionName": "RollingUpdateEnabled",
+            "Value": "true"
+          },
+          {
+            "Namespace": "aws:autoscaling:updatepolicy:rollingupdate",
+            "OptionName": "RollingUpdateType",
+            "Value": "Health"
+          },
+          {
+            "Namespace": "aws:ec2:instances",
+            "OptionName": "InstanceTypes",
+            "Value": "t2.micro"
+          },
+          {
+            "Namespace": "aws:elasticbeanstalk:application:environment",
+            "OptionName": "GOOGLE_CLIENT_ID",
+            "Value": "87896894959-9inbopi0v3cebs1rktlpk0vb70qd4vvu.apps.googleusercontent.com"
+          },
+          {
+            "Namespace": "aws:elasticbeanstalk:application:environment",
+            "OptionName": "GOOGLE_CLIENT_SECRET",
+            "Value": "_k06q4tqkNLwAPwIZDdUkFC6"
+          },
+          {
+            "Namespace": "aws:elasticbeanstalk:application:environment",
+            "OptionName": "GRADLE_HOME",
+            "Value": "/usr/local/gradle"
+          },
+          {
+            "Namespace": "aws:elasticbeanstalk:application:environment",
+            "OptionName": "JAVA_HOME",
+            "Value": "/usr/lib/jvm/java"
+          },
+          {
+            "Namespace": "aws:elasticbeanstalk:application:environment",
+            "OptionName": "M2",
+            "Value": "/usr/local/apache-maven/bin"
+          },
+          {
+            "Namespace": "aws:elasticbeanstalk:application:environment",
+            "OptionName": "M2_HOME",
+            "Value": "/usr/local/apache-maven"
+          },
+          {
+            "Namespace": "aws:elasticbeanstalk:application:environment",
+            "OptionName": "OAUTH_ENABLE",
+            "Value": "false"
+          },
+          {
+            "Namespace": "aws:elasticbeanstalk:application:environment",
+            "OptionName": "SPRING_PROFILES_ACTIVE",
+            "Value": "beanstalk"
+          },
+          {
+            "Namespace": "aws:elasticbeanstalk:command",
+            "OptionName": "BatchSize",
+            "Value": "30"
+          },
+          {
+            "Namespace": "aws:elasticbeanstalk:environment",
+            "OptionName": "ServiceRole",
+            "Value": "arn:aws:iam::198891906952:role/aws-elasticbeanstalk-service-role"
+          },
+          {
+            "Namespace": "aws:elasticbeanstalk:healthreporting:system",
+            "OptionName": "ConfigDocument",
+            "Value": "{\"Version\":1,\"CloudWatchMetrics\":{\"Instance\":{\"CPUIrq\":null,\"LoadAverage5min\":null,\"ApplicationRequests5xx\":null,\"ApplicationRequests4xx\":null,\"CPUUser\":null,\"LoadAverage1min\":null,\"ApplicationLatencyP50\":null,\"CPUIdle\":null,\"InstanceHealth\":null,\"ApplicationLatencyP95\":null,\"ApplicationLatencyP85\":null,\"RootFilesystemUtil\":null,\"ApplicationLatencyP90\":null,\"CPUSystem\":null,\"ApplicationLatencyP75\":null,\"CPUSoftirq\":null,\"ApplicationLatencyP10\":null,\"ApplicationLatencyP99\":null,\"ApplicationRequestsTotal\":null,\"ApplicationLatencyP99.9\":null,\"ApplicationRequests3xx\":null,\"ApplicationRequests2xx\":null,\"CPUIowait\":null,\"CPUNice\":null},\"Environment\":{\"InstancesSevere\":null,\"InstancesDegraded\":null,\"ApplicationRequests5xx\":null,\"ApplicationRequests4xx\":null,\"ApplicationLatencyP50\":null,\"ApplicationLatencyP95\":null,\"ApplicationLatencyP85\":null,\"InstancesUnknown\":null,\"ApplicationLatencyP90\":null,\"InstancesInfo\":null,\"InstancesPending\":null,\"ApplicationLatencyP75\":null,\"ApplicationLatencyP10\":null,\"ApplicationLatencyP99\":null,\"ApplicationRequestsTotal\":null,\"InstancesNoData\":null,\"ApplicationLatencyP99.9\":null,\"ApplicationRequests3xx\":null,\"ApplicationRequests2xx\":null,\"InstancesOk\":null,\"InstancesWarning\":null}}}"
+          },
+          {
+            "Namespace": "aws:elasticbeanstalk:healthreporting:system",
+            "OptionName": "SystemType",
+            "Value": "enhanced"
+          },
+          {
+            "Namespace": "aws:elb:healthcheck",
+            "OptionName": "Interval",
+            "Value": "10"
+          },
+          {
+            "Namespace": "aws:elb:loadbalancer",
+            "OptionName": "CrossZone",
+            "Value": "true"
+          },
+          {
+            "Namespace": "aws:elb:loadbalancer",
+            "OptionName": "LoadBalancerHTTPPort",
+            "Value": "80"
+          },
+          {
+            "Namespace": "aws:elb:loadbalancer",
+            "OptionName": "SecurityGroups",
+            "Value": "sg-07ab186c7cc8f55fa"
+          },
+          {
+            "Namespace": "aws:elb:policies",
+            "OptionName": "ConnectionDrainingEnabled",
+            "Value": "true"
+          },
+          {
+            "Namespace": "aws:rds:dbinstance",
+            "OptionName": "DBAllocatedStorage",
+            "Value": "10"
+          },
+          {
+            "Namespace": "aws:rds:dbinstance",
+            "OptionName": "DBDeletionPolicy",
+            "Value": "Snapshot"
+          },
+          {
+            "Namespace": "aws:rds:dbinstance",
+            "OptionName": "DBEngine",
+            "Value": "postgres"
+          },
+          {
+            "Namespace": "aws:rds:dbinstance",
+            "OptionName": "DBPassword",
+            "Value": "******"
+          },
+          {
+            "Namespace": "aws:rds:dbinstance",
+            "OptionName": "DBUser",
+            "Value": "mrAdmin"
+          }
+        ]
+      }
+    },
+    "rdsaavjawgc8jfgfj": {
+      "Type": "AWS::RDS::DBInstance",
+      "Properties": {
+        "AllocatedStorage": "10",
+        "AllowMajorVersionUpgrade": "false",
+        "AutoMinorVersionUpgrade": "true",
+        "DBInstanceClass": "db.t2.micro",
+        "Port": "5432",
+        "PubliclyAccessible": "true",
+        "StorageType": "standard",
+        "BackupRetentionPeriod": "1",
+        "MasterUsername": "mrAdmin",
+        "MasterUserPassword": "MyPassword",
+        "PreferredBackupWindow": "02:24-02:54",
+        "PreferredMaintenanceWindow": "thu:22:19-thu:22:49",
+        "DBName": "MyDatabase",
+        "Engine": "postgres",
+        "EngineVersion": "11.5",
+        "LicenseModel": "postgresql-license",
+        "DBSubnetGroupName": {
+          "Ref": "dbsubnetdefault"
+        },
+        "VPCSecurityGroups": [
+          "sg-088ecb185bc3309af"
+        ],
+        "Tags": [
+          {
+            "Key": "elasticbeanstalk:environment-name",
+            "Value": "prod"
+          },
+          {
+            "Key": "elasticbeanstalk:environment-id",
+            "Value": "e-iwxpnytz3v"
+          },
+          {
+            "Key": "Name",
+            "Value": "prod"
+          }
+        ]
+      }
+    },
+    "s3elasticbeanstalkeucentral1198891906952": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "AccessControl": "Private",
+        "VersioningConfiguration": {
+          "Status": "Suspended"
+        }
+      }
+    },
+    "dbsubnetdefault": {
+      "Type": "AWS::RDS::DBSubnetGroup",
+      "Properties": {
+        "DBSubnetGroupDescription": "default",
+        "SubnetIds": [
+          {
+            "Ref": "subnet0184784d"
+          },
+          {
+            "Ref": "subnetfd947d81"
+          },
+          {
+            "Ref": "subnet0419aa6e"
+          }
+        ]
+      }
+    },
+    "dbsubnetdefaultvpcc013d8aa": {
+      "Type": "AWS::RDS::DBSubnetGroup",
+      "Properties": {
+        "DBSubnetGroupDescription": "Created from the RDS Management Console",
+        "SubnetIds": [
+          {
+            "Ref": "subnet0184784d"
+          },
+          {
+            "Ref": "subnetfd947d81"
+          },
+          {
+            "Ref": "subnet0419aa6e"
+          }
+        ]
+      }
+    },
+    "sgdefault": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "default VPC security group",
+        "VpcId": {
+          "Ref": "vpcc013d8aa"
+        }
+      }
+    },
+    "sgCloudFormerStackWebServerSecurityGroup14QUFJASWIZ3L": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Enable HTTPS access via port 443",
+        "VpcId": {
+          "Ref": "vpc0cabd7ab3e1f989d4"
+        }
+      }
+    },
+    "dbsgdefault": {
+      "Type": "AWS::RDS::DBSecurityGroup",
+      "Properties": {
+        "GroupDescription": "default"
+      }
+    },
+    "s3policyelasticbeanstalkeucentral1198891906952": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "s3elasticbeanstalkeucentral1198891906952"
+        },
+        "PolicyDocument": {
+          "Version": "2008-10-17",
+          "Statement": [
+            {
+              "Sid": "eb-ad78f54a-f239-4c90-adda-49e5f56cb51e",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": "arn:aws:iam::198891906952:role/aws-elasticbeanstalk-ec2-role"
+              },
+              "Action": "s3:PutObject",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:s3:::",
+                    "elasticbeanstalk-eu-central-",
+                    "1-198891906952/resources/environments/logs/*"
+                  ]
+                ]
+              }
+            },
+            {
+              "Sid": "eb-af163bf3-d27b-4712-b795-d1e33e331ca4",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": "arn:aws:iam::198891906952:role/aws-elasticbeanstalk-ec2-role"
+              },
+              "Action": [
+                "s3:ListBucket",
+                "s3:ListBucketVersions",
+                "s3:GetObject",
+                "s3:GetObjectVersion"
+              ],
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::",
+                      "elasticbeanstalk-eu-central-",
+                      "1-198891906952"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::",
+                      "elasticbeanstalk-eu-central-",
+                      "1-198891906952/resources/environments/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Sid": "eb-58950a8c-feb6-11e2-89e0-0800277d041b",
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*"
+              },
+              "Action": "s3:DeleteBucket",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:s3:::",
+                    "elasticbeanstalk-eu-central-",
+                    "1-198891906952"
+                  ]
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    "acl5": {
+      "Type": "AWS::EC2::NetworkAclEntry",
+      "Properties": {
+        "CidrBlock": "0.0.0.0/0",
+        "Egress": "true",
+        "Protocol": "-1",
+        "RuleAction": "allow",
+        "RuleNumber": "100",
+        "NetworkAclId": {
+          "Ref": "acl090dbb9cecd05fc82"
+        }
+      }
+    },
+    "acl6": {
+      "Type": "AWS::EC2::NetworkAclEntry",
+      "Properties": {
+        "CidrBlock": "0.0.0.0/0",
+        "Protocol": "-1",
+        "RuleAction": "allow",
+        "RuleNumber": "100",
+        "NetworkAclId": {
+          "Ref": "acl090dbb9cecd05fc82"
+        }
+      }
+    },
+    "acl7": {
+      "Type": "AWS::EC2::NetworkAclEntry",
+      "Properties": {
+        "CidrBlock": "0.0.0.0/0",
+        "Egress": "true",
+        "Protocol": "-1",
+        "RuleAction": "allow",
+        "RuleNumber": "100",
+        "NetworkAclId": {
+          "Ref": "aclabe783c1"
+        }
+      }
+    },
+    "acl8": {
+      "Type": "AWS::EC2::NetworkAclEntry",
+      "Properties": {
+        "CidrBlock": "0.0.0.0/0",
+        "Protocol": "-1",
+        "RuleAction": "allow",
+        "RuleNumber": "100",
+        "NetworkAclId": {
+          "Ref": "aclabe783c1"
+        }
+      }
+    },
+    "subnetacl5": {
+      "Type": "AWS::EC2::SubnetNetworkAclAssociation",
+      "Properties": {
+        "NetworkAclId": {
+          "Ref": "acl090dbb9cecd05fc82"
+        },
+        "SubnetId": {
+          "Ref": "subnet0655241bc78badd8d"
+        }
+      }
+    },
+    "subnetacl6": {
+      "Type": "AWS::EC2::SubnetNetworkAclAssociation",
+      "Properties": {
+        "NetworkAclId": {
+          "Ref": "aclabe783c1"
+        },
+        "SubnetId": {
+          "Ref": "subnet0184784d"
+        }
+      }
+    },
+    "subnetacl7": {
+      "Type": "AWS::EC2::SubnetNetworkAclAssociation",
+      "Properties": {
+        "NetworkAclId": {
+          "Ref": "aclabe783c1"
+        },
+        "SubnetId": {
+          "Ref": "subnet0419aa6e"
+        }
+      }
+    },
+    "subnetacl8": {
+      "Type": "AWS::EC2::SubnetNetworkAclAssociation",
+      "Properties": {
+        "NetworkAclId": {
+          "Ref": "aclabe783c1"
+        },
+        "SubnetId": {
+          "Ref": "subnetfd947d81"
+        }
+      }
+    },
+    "gw3": {
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+      "Properties": {
+        "VpcId": {
+          "Ref": "vpc0cabd7ab3e1f989d4"
+        },
+        "InternetGatewayId": {
+          "Ref": "igw07a6bc207fabbfe02"
+        }
+      }
+    },
+    "gw4": {
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+      "Properties": {
+        "VpcId": {
+          "Ref": "vpcc013d8aa"
+        },
+        "InternetGatewayId": {
+          "Ref": "igwfa24ea91"
+        }
+      }
+    },
+    "subnetroute4": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "rtb0bb04ff44a5f7bc3a"
+        },
+        "SubnetId": {
+          "Ref": "subnet0655241bc78badd8d"
+        }
+      }
+    },
+    "route3": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "RouteTableId": {
+          "Ref": "rtb0bb04ff44a5f7bc3a"
+        },
+        "GatewayId": {
+          "Ref": "igw07a6bc207fabbfe02"
+        }
+      },
+      "DependsOn": "gw3"
+    },
+    "route4": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "RouteTableId": {
+          "Ref": "rtbeacd8080"
+        },
+        "GatewayId": {
+          "Ref": "igwfa24ea91"
+        }
+      },
+      "DependsOn": "gw4"
+    },
+    "dchpassoc3": {
+      "Type": "AWS::EC2::VPCDHCPOptionsAssociation",
+      "Properties": {
+        "VpcId": {
+          "Ref": "vpc0cabd7ab3e1f989d4"
+        },
+        "DhcpOptionsId": {
+          "Ref": "dopt1a35fe70"
+        }
+      }
+    },
+    "dchpassoc4": {
+      "Type": "AWS::EC2::VPCDHCPOptionsAssociation",
+      "Properties": {
+        "VpcId": {
+          "Ref": "vpcc013d8aa"
+        },
+        "DhcpOptionsId": {
+          "Ref": "dopt1a35fe70"
+        }
+      }
+    },
+    "ingress4": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "GroupId": {
+          "Ref": "sgdefault"
+        },
+        "IpProtocol": "-1",
+        "SourceSecurityGroupId": {
+          "Ref": "sgdefault"
+        },
+        "SourceSecurityGroupOwnerId": "198891906952"
+      }
+    },
+    "ingress5": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "GroupId": {
+          "Ref": "sgCloudFormerStackWebServerSecurityGroup14QUFJASWIZ3L"
+        },
+        "IpProtocol": "tcp",
+        "FromPort": "443",
+        "ToPort": "443",
+        "CidrIp": "0.0.0.0/0"
+      }
+    },
+    "ingress6": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "GroupId": {
+          "Ref": "sgdefault"
+        },
+        "IpProtocol": "-1",
+        "SourceSecurityGroupId": {
+          "Ref": "sgdefault"
+        },
+        "SourceSecurityGroupOwnerId": "198891906952"
+      }
+    },
+    "egress4": {
+      "Type": "AWS::EC2::SecurityGroupEgress",
+      "Properties": {
+        "GroupId": {
+          "Ref": "sgdefault"
+        },
+        "IpProtocol": "-1",
+        "CidrIp": "0.0.0.0/0"
+      }
+    },
+    "egress5": {
+      "Type": "AWS::EC2::SecurityGroupEgress",
+      "Properties": {
+        "GroupId": {
+          "Ref": "sgCloudFormerStackWebServerSecurityGroup14QUFJASWIZ3L"
+        },
+        "IpProtocol": "-1",
+        "CidrIp": "0.0.0.0/0"
+      }
+    },
+    "egress6": {
+      "Type": "AWS::EC2::SecurityGroupEgress",
+      "Properties": {
+        "GroupId": {
+          "Ref": "sgdefault"
+        },
+        "IpProtocol": "-1",
+        "CidrIp": "0.0.0.0/0"
+      }
+    }
+  },
+  "Description": "Backup"
+}
