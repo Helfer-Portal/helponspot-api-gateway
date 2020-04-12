@@ -36,9 +36,7 @@ paths:
               schema:
                 type: "array"
                 items:
-                  allOf:
-                    - $ref: "#/components/schemas/id"
-                    - $ref: "#/components/schemas/user"
+                  $ref: "#/components/schemas/user"
     post:
       tags:
         - "User"
@@ -63,9 +61,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: "#/components/schemas/id"
-                  - $ref: "#/components/schemas/profile"
+                $ref: "#/components/schemas/profile"
   /users/{userId}:
     get:
       tags:
@@ -90,9 +86,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: "#/components/schemas/id"
-                  - $ref: "#/components/schemas/user"
+                $ref: "#/components/schemas/user"
     delete:
       tags:
         - "User"
@@ -227,9 +221,9 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: "#/components/schemas/id"
-                  - $ref: "#/components/schemas/request"
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/request"
   /requests/{requestId}:
     get:
       tags:
@@ -305,10 +299,7 @@ paths:
               schema:
                 type: "array"
                 items:
-                  allOf:
-                    - $ref: "#/components/schemas/id"
-                    - $ref: "#/components/schemas/user"
-                    - $ref: "#/components/schemas/responseStatus"
+                  $ref: "#/components/schemas/responseStatus"
   /requests/{requestId}/volunteers/{userId}:
     put:
       tags:
@@ -513,9 +504,7 @@ paths:
               schema:
                 type: "array"
                 items:
-                  allOf:
-                    - $ref: "#/components/schemas/id"
-                    - $ref: "#/components/schemas/request"
+                  $ref: "#/components/schemas/request"
   /qualifications:
     get:
       tags:
@@ -529,23 +518,19 @@ paths:
               schema:
                 type: "array"
                 items:
-                  type: "string"
-                  example: "Drivers licence"
+                  $ref: "#/components/schemas/qualification"
         500:
           description: "Error while getting qualifications"
           content: {}
 components:
   schemas:
-    id:
+    request:
       type: "object"
       properties:
         id:
           type: "integer"
           description: "Unique ID"
           format: "int32"
-    request:
-      type: "object"
-      properties:
         isActive:
           type: "integer"
           format: "int32"
@@ -560,6 +545,10 @@ components:
     address:
       type: "object"
       properties:
+        id:
+          type: "integer"
+          description: "Unique ID"
+          format: "int32"
         street:
           type: "string"
         houseNumber:
@@ -604,6 +593,10 @@ components:
     user:
       type: "object"
       properties:
+        id:
+          type: "integer"
+          description: "Unique ID"
+          format: "int32"
         lastName:
           type: "string"
           description: "Last name"
@@ -652,9 +645,19 @@ components:
         longitude:
           type: "string"
           description: "Longitude"
+    qualification:
+      type: "object"
+      properties:
+        key:
+          type: "string"
+        name:
+          type: "string"
+          description: "Translated name"
     responseStatus:
       type: "object"
       properties:
+        userId:
+          type: "integer"
         reponseStatus:
           type: "string"
           description: "User reponse to request"
