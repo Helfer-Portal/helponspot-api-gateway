@@ -540,8 +540,6 @@ components:
           type: "string"
         address:
           $ref: "#/components/schemas/address"
-        project:
-          $ref: "#/components/schemas/project"
     address:
       type: "object"
       properties:
@@ -576,20 +574,10 @@ components:
           description: "Path to logo"
         address:
           $ref: "#/components/schemas/address"
-        projects:
+        requests:
           type: "array"
           items:
-            $ref: "#/components/schemas/project"
-    project:
-      type: "object"
-      properties:
-        id:
-          type: "integer"
-          description: "Unique ID"
-          format: "int32"
-        name:
-          type: "string"
-          description: "Description of project"
+            $ref: "#/components/schemas/request"
     user:
       type: "object"
       properties:
@@ -660,6 +648,5 @@ components:
           type: "integer"
         reponseStatus:
           type: "string"
-          description: "User reponse to request"
+          description: "User response to request"
           enum: [accepted, pending, declined]
-
