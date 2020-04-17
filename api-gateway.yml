@@ -75,7 +75,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/profile"
+              $ref: "#/components/schemas/profileData"
         required: true
       responses:
         400:
@@ -274,6 +274,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ArrayOflocation"
+  /ping:
+    get:
+      security:
+        - cognito-authorizer: []
+    options: {}
   /requests:
     post:
       tags:
@@ -329,6 +334,12 @@ paths:
       tags:
         - "Organisation"
       summary: "Creates an organization"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/organisationData"
+        required: true
       responses:
         400:
           description: "A required parameter is missing or invalid"
@@ -615,6 +626,10 @@ components:
           type: "array"
           items:
             $ref: "#/components/schemas/request"
+        responsibles:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/user"
     responseStatus:
       type: "object"
       properties:
@@ -644,6 +659,25 @@ components:
       type: "array"
       items:
         $ref: "#/components/schemas/request"
+    organisationData:
+      required:
+        - "address"
+        - "name"
+        - "responsibles"
+      type: "object"
+      properties:
+        name:
+          type: "string"
+          description: "Organization name"
+        logoPath:
+          type: "string"
+          description: "Path to logo"
+        address:
+          $ref: "#/components/schemas/addressData"
+        responsibles:
+          type: "array"
+          items:
+            type: "string"
     location:
       type: "object"
       properties:
@@ -657,6 +691,36 @@ components:
       type: "array"
       items:
         $ref: "#/components/schemas/organisation"
+    profileData:
+      required:
+        - "email"
+        - "firstName"
+        - "lastName"
+        - "qualifications"
+      type: "object"
+      properties:
+        lastName:
+          type: "string"
+          description: "Last name"
+        firstName:
+          type: "string"
+          description: "First name"
+        email:
+          type: "string"
+          description: "Email of user"
+        isGPSLocationAllowed:
+          type: "boolean"
+          description: "Boolean for GPS location"
+        address:
+          $ref: "#/components/schemas/addressData"
+        qualifications:
+          type: "array"
+          description: "Array of user qualities"
+          items:
+            type: "string"
+        avatar:
+          type: "string"
+          description: "URL to user avatar"
     ArrayOflocation:
       type: "array"
       items:
@@ -681,3 +745,28 @@ components:
         email:
           type: "string"
           description: "Email of user"
+    addressData:
+      required:
+        - "city"
+        - "country"
+        - "houseNumber"
+        - "postalCode"
+        - "street"
+      type: "object"
+      properties:
+        street:
+          type: "string"
+        houseNumber:
+          type: "string"
+        postalCode:
+          type: "string"
+        city:
+          type: "string"
+        country:
+          type: "string"
+  securitySchemes:
+    cognito-authorizer:
+      type: "apiKey"
+      name: "Authorization"
+      in: "header"
+      x-amazon-apigateway-authtype: "cognito_user_pools"
