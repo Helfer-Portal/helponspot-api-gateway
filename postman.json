@@ -14,7 +14,7 @@
       "url": "https://js7pyl1b87.execute-api.eu-central-1.amazonaws.com/{basePath}",
       "variables": {
         "basePath": {
-          "default": "dev"
+          "default": "/dev"
         }
       }
     }
@@ -117,7 +117,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/profile"
+                "$ref": "#/components/schemas/profileData"
               }
             }
           },
@@ -431,33 +431,15 @@
         }
       }
     },
-    "/requests": {
-      "post": {
-        "tags": [
-          "Request"
-        ],
-        "summary": "Create a request",
-        "responses": {
-          "200": {
-            "description": "Created request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ArrayOfrequest"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "A required parameter is missing or invalid",
-            "content": {}
-          },
-          "500": {
-            "description": "Error while creating request",
-            "content": {}
+    "/ping": {
+      "get": {
+        "security": [
+          {
+            "cognito-authorizer": []
           }
-        }
-      }
+        ]
+      },
+      "options": {}
     },
     "/qualifications": {
       "get": {
@@ -515,6 +497,16 @@
           "Organisation"
         ],
         "summary": "Creates an organization",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/organisationData"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
           "200": {
             "description": "Created organisations",
@@ -624,6 +616,40 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ArrayOfrequest"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "parameters": [
+          {
+            "name": "organisationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/requestData"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Created organisations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/request"
                 }
               }
             }
@@ -833,18 +859,29 @@
             "description": "Unique ID",
             "format": "int32"
           },
-          "isActive": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "start": {
+          "title": {
             "type": "string"
           },
-          "end": {
+          "description": {
+            "type": "string"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "startDate": {
+            "type": "string"
+          },
+          "endDate": {
             "type": "string"
           },
           "address": {
             "$ref": "#/components/schemas/address"
+          },
+          "organisation": {
+            "$ref": "#/components/schemas/organisation"
+          },
+          "responses": {
+            "type": "string"
           }
         }
       },
@@ -947,6 +984,12 @@
             "items": {
               "$ref": "#/components/schemas/request"
             }
+          },
+          "responsibles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/user"
+            }
           }
         }
       },
@@ -992,6 +1035,33 @@
           "$ref": "#/components/schemas/request"
         }
       },
+      "organisationData": {
+        "required": [
+          "address",
+          "name",
+          "responsibles"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Organization name"
+          },
+          "logoPath": {
+            "type": "string",
+            "description": "Path to logo"
+          },
+          "address": {
+            "$ref": "#/components/schemas/addressData"
+          },
+          "responsibles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
       "location": {
         "type": "object",
         "properties": {
@@ -1009,6 +1079,80 @@
         "type": "array",
         "items": {
           "$ref": "#/components/schemas/organisation"
+        }
+      },
+      "profileData": {
+        "required": [
+          "email",
+          "firstName",
+          "lastName",
+          "qualifications"
+        ],
+        "type": "object",
+        "properties": {
+          "lastName": {
+            "type": "string",
+            "description": "Last name"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "First name"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email of user"
+          },
+          "isGPSLocationAllowed": {
+            "type": "boolean",
+            "description": "Boolean for GPS location"
+          },
+          "address": {
+            "$ref": "#/components/schemas/addressData"
+          },
+          "qualifications": {
+            "type": "array",
+            "description": "Array of user qualities",
+            "items": {
+              "type": "string"
+            }
+          },
+          "avatar": {
+            "type": "string",
+            "description": "URL to user avatar"
+          }
+        }
+      },
+      "requestData": {
+        "required": [
+          "description",
+          "title"
+        ],
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "startDate": {
+            "type": "string"
+          },
+          "endDate": {
+            "type": "string"
+          },
+          "address": {
+            "$ref": "#/components/schemas/address"
+          },
+          "qualifications": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
         }
       },
       "ArrayOflocation": {
@@ -1044,6 +1188,41 @@
             "description": "Email of user"
           }
         }
+      },
+      "addressData": {
+        "required": [
+          "city",
+          "country",
+          "houseNumber",
+          "postalCode",
+          "street"
+        ],
+        "type": "object",
+        "properties": {
+          "street": {
+            "type": "string"
+          },
+          "houseNumber": {
+            "type": "string"
+          },
+          "postalCode": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "cognito-authorizer": {
+        "type": "apiKey",
+        "name": "Authorization",
+        "in": "header",
+        "x-amazon-apigateway-authtype": "cognito_user_pools"
       }
     }
   }

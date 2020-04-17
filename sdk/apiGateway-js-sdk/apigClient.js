@@ -122,7 +122,7 @@ apigClientFactory.newClient = function (config) {
     apigClient.organisationsPost = function (params, body, additionalParams) {
         if(additionalParams === undefined) { additionalParams = {}; }
         
-        apiGateway.core.utils.assertParametersDefined(params, [], ['body']);
+        apiGateway.core.utils.assertParametersDefined(params, ['body'], ['body']);
         
         var organisationsPostRequest = {
             verb: 'post'.toUpperCase(),
@@ -191,6 +191,60 @@ apigClientFactory.newClient = function (config) {
     };
     
     
+    apigClient.organisationsOrganisationIdRequestsPost = function (params, body, additionalParams) {
+        if(additionalParams === undefined) { additionalParams = {}; }
+        
+        apiGateway.core.utils.assertParametersDefined(params, ['organisationId', 'body'], ['body']);
+        
+        var organisationsOrganisationIdRequestsPostRequest = {
+            verb: 'post'.toUpperCase(),
+            path: pathComponent + uritemplate('/organisations/{organisationId}/requests').expand(apiGateway.core.utils.parseParametersToObject(params, ['organisationId', ])),
+            headers: apiGateway.core.utils.parseParametersToObject(params, []),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
+            body: body
+        };
+        
+        
+        return apiGatewayClient.makeRequest(organisationsOrganisationIdRequestsPostRequest, authType, additionalParams, config.apiKey);
+    };
+    
+    
+    apigClient.pingGet = function (params, body, additionalParams) {
+        if(additionalParams === undefined) { additionalParams = {}; }
+        
+        apiGateway.core.utils.assertParametersDefined(params, [], ['body']);
+        
+        var pingGetRequest = {
+            verb: 'get'.toUpperCase(),
+            path: pathComponent + uritemplate('/ping').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
+            headers: apiGateway.core.utils.parseParametersToObject(params, []),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
+            body: body
+        };
+        
+        
+        return apiGatewayClient.makeRequest(pingGetRequest, authType, additionalParams, config.apiKey);
+    };
+    
+    
+    apigClient.pingOptions = function (params, body, additionalParams) {
+        if(additionalParams === undefined) { additionalParams = {}; }
+        
+        apiGateway.core.utils.assertParametersDefined(params, [], ['body']);
+        
+        var pingOptionsRequest = {
+            verb: 'options'.toUpperCase(),
+            path: pathComponent + uritemplate('/ping').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
+            headers: apiGateway.core.utils.parseParametersToObject(params, []),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
+            body: body
+        };
+        
+        
+        return apiGatewayClient.makeRequest(pingOptionsRequest, authType, additionalParams, config.apiKey);
+    };
+    
+    
     apigClient.qualificationsGet = function (params, body, additionalParams) {
         if(additionalParams === undefined) { additionalParams = {}; }
         
@@ -206,24 +260,6 @@ apigClientFactory.newClient = function (config) {
         
         
         return apiGatewayClient.makeRequest(qualificationsGetRequest, authType, additionalParams, config.apiKey);
-    };
-    
-    
-    apigClient.requestsPost = function (params, body, additionalParams) {
-        if(additionalParams === undefined) { additionalParams = {}; }
-        
-        apiGateway.core.utils.assertParametersDefined(params, [], ['body']);
-        
-        var requestsPostRequest = {
-            verb: 'post'.toUpperCase(),
-            path: pathComponent + uritemplate('/requests').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
-            headers: apiGateway.core.utils.parseParametersToObject(params, []),
-            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
-            body: body
-        };
-        
-        
-        return apiGatewayClient.makeRequest(requestsPostRequest, authType, additionalParams, config.apiKey);
     };
     
     
