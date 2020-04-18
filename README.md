@@ -12,7 +12,10 @@
 # Implementation progress
 These endpoints have been implemented and can be tested for frontend integration
 * POST - `/users`
+* GET - `/users/{userId}`
 * POST - `/organisations`
+* POST - `/requests`
+* GET - `/requests/{requestId}`
 * GET - `/qualifications`
 
 more info about progress [here](https://github.com/orgs/Helfer-Portal/projects/3)
