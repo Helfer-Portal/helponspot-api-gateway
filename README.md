@@ -13,6 +13,6 @@
 These endpoints have been implemented and can be tested for frontend integration
 * POST - `/users`
 * POST - `/organisations`
-* GET - `/qualification`
+* GET - `/qualifications`
 
 more info about progress [here](https://github.com/orgs/Helfer-Portal/projects/3)
