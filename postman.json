@@ -14,7 +14,7 @@
       "url": "https://js7pyl1b87.execute-api.eu-central-1.amazonaws.com/{basePath}",
       "variables": {
         "basePath": {
-          "default": "/dev"
+          "default": "dev"
         }
       }
     }
@@ -756,7 +756,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/user"
+                  "$ref": "#/components/schemas/profile"
                 }
               }
             }
@@ -1124,7 +1124,10 @@
       },
       "requestData": {
         "required": [
+          "address",
           "description",
+          "endDate",
+          "startDate",
           "title"
         ],
         "type": "object",
@@ -1139,10 +1142,12 @@
             "type": "boolean"
           },
           "startDate": {
-            "type": "string"
+            "type": "string",
+            "description": "Date as ISO 8601 string"
           },
           "endDate": {
-            "type": "string"
+            "type": "string",
+            "description": "Date as ISO 8601 string"
           },
           "address": {
             "$ref": "#/components/schemas/address"

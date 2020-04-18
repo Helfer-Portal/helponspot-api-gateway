@@ -10,7 +10,7 @@ servers:
   - url: "https://js7pyl1b87.execute-api.eu-central-1.amazonaws.com/{basePath}"
     variables:
       basePath:
-        default: "/dev"
+        default: "dev"
 tags:
   - name: "User"
   - name: "Organisation"
@@ -488,7 +488,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/user"
+                $ref: "#/components/schemas/profile"
     delete:
       tags:
         - "User"
@@ -732,7 +732,10 @@ components:
           description: "URL to user avatar"
     requestData:
       required:
+        - "address"
         - "description"
+        - "endDate"
+        - "startDate"
         - "title"
       type: "object"
       properties:
@@ -744,8 +747,10 @@ components:
           type: "boolean"
         startDate:
           type: "string"
+          description: "Date as ISO 8601 string"
         endDate:
           type: "string"
+          description: "Date as ISO 8601 string"
         address:
           $ref: "#/components/schemas/address"
         qualifications:
