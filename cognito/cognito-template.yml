@@ -1,0 +1,124 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+
+Resources:
+
+  # User pool
+  HoSCognitoUserPool:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        UserPoolName: help_on_spot_cognito_user_pool_with_sam
+        AccountRecoverySetting:
+          RecoveryMechanisms: 
+              - Name: verified_email
+                Priority: 1
+        AliasAttributes:
+          - email
+        # The lambda function to call after user email was confirmed
+        #LambdaConfig:
+        #  PostConfirmation: arn:aws:lambda:eu-central-1:198891906952:function:HoS_post-user_dev
+        Policies:
+          PasswordPolicy:
+            MinimumLength: 8
+            RequireLowercase: True
+            RequireNumbers: True
+            RequireSymbols: True
+            RequireUppercase: True
+        UsernameConfiguration:
+          CaseSensitive: True
+        Schema:
+          - AttributeDataType: String
+            Name: email
+            Required: True            
+        VerificationMessageTemplate: 
+          DefaultEmailOption: CONFIRM_WITH_LINK
+          EmailMessageByLink: Welcome to Help On Spot! Please click the link below to verify your email address. {##Verify Email##} 
+          EmailSubjectByLink: Your verification link
+        AutoVerifiedAttributes:
+          - email
+
+  # A sample admin group
+  HoSCognitoUserPoolAdminGroup:
+    Type: AWS::Cognito::UserPoolGroup
+    Properties: 
+      GroupName: admin
+      Description: A group for users with admin privilages
+      #RoleArn: String # create a role for Admin group
+      UserPoolId: !Ref HoSCognitoUserPool          
+
+  # The domain settings
+  HoSCognitoUserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties: 
+      Domain: helponspot
+      UserPoolId: !Ref HoSCognitoUserPool
+
+  # Google identity provider
+  GoogleIdentityProvider:
+    Type: AWS::Cognito::UserPoolIdentityProvider
+    Properties:
+      UserPoolId: !Ref HoSCognitoUserPool
+      ProviderName: Google
+      ProviderDetails:
+        client_id: <<gooogle client id here>>
+        client_secret: <<gooogle client secret here>>
+        authorize_scopes: profile email openid
+      ProviderType: Google
+      AttributeMapping:
+        email: email
+
+  # Amazon identity provider
+  AmazonIdentityProvider:
+    Type: AWS::Cognito::UserPoolIdentityProvider
+    Properties:
+      UserPoolId: !Ref HoSCognitoUserPool
+      ProviderName: LoginWithAmazon
+      ProviderDetails:
+        client_id: <<amazon client id here>>
+        client_secret: <<amazon client secret here>>
+        authorize_scopes: profile
+      ProviderType: LoginWithAmazon
+      AttributeMapping:
+        email: email
+
+  # User pool client
+  HoSCognitoUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    DependsOn: 
+      - GoogleIdentityProvider
+      - AmazonIdentityProvider  
+    Properties:
+      ClientName: help_on_spot_client
+      UserPoolId: !Ref HoSCognitoUserPool
+      AllowedOAuthFlowsUserPoolClient: True
+      PreventUserExistenceErrors: ENABLED
+      AllowedOAuthFlows:
+        - code
+        - implicit
+      ExplicitAuthFlows:
+        - ALLOW_ADMIN_USER_PASSWORD_AUTH
+        - ALLOW_USER_PASSWORD_AUTH
+        - ALLOW_USER_SRP_AUTH
+        - ALLOW_REFRESH_TOKEN_AUTH
+      AllowedOAuthScopes:
+        - email
+        - openid
+      CallbackURLs:
+        - http://localhost:3000/
+        #- other urls e.g. https://helponspot.com/
+      LogoutURLs: 
+        - http://localhost:3000/
+        #- other urls e.g. https://helponspot.com/
+      SupportedIdentityProviders:
+        - COGNITO
+        - Google
+        - LoginWithAmazon
+
+Outputs:
+  CognitoUserPoolId:
+      Description: Cognito User Pool Id
+      Value: !Ref HoSCognitoUserPool
+
+  CognitoUserPoolClientId:
+      Description: Cognito User Pool Client Id
+      Value: !Ref HoSCognitoUserPoolClient
