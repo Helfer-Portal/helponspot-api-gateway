@@ -7,7 +7,7 @@ Resources:
   HoSCognitoUserPool:
       Type: AWS::Cognito::UserPool
       Properties:
-        UserPoolName: help_on_spot_cognito_user_pool_with_sam
+        UserPoolName: help_on_spot_cognito_user_pool
         AccountRecoverySetting:
           RecoveryMechanisms: 
               - Name: verified_email
@@ -60,8 +60,8 @@ Resources:
       UserPoolId: !Ref HoSCognitoUserPool
       ProviderName: Google
       ProviderDetails:
-        client_id: <<gooogle client id here>>
-        client_secret: <<gooogle client secret here>>
+        client_id: 712951823298-63bvjn7kmibubnc1pae68egovm3rijo8.apps.googleusercontent.com
+        client_secret: _hoFc9vKUSld1S9OnBsQQC5t
         authorize_scopes: profile email openid
       ProviderType: Google
       AttributeMapping:
@@ -74,8 +74,8 @@ Resources:
       UserPoolId: !Ref HoSCognitoUserPool
       ProviderName: LoginWithAmazon
       ProviderDetails:
-        client_id: <<amazon client id here>>
-        client_secret: <<amazon client secret here>>
+        client_id: amzn1.application-oa2-client.6ba1a92ede974d9cb370d87475dcc9ba
+        client_secret: 18b518226f659d10e3ce62f51ee371fdc8894ade3a817001a05c64d6976ff895
         authorize_scopes: profile
       ProviderType: LoginWithAmazon
       AttributeMapping:
