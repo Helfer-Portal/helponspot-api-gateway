@@ -443,6 +443,24 @@ apigClientFactory.newClient = function (config) {
     };
     
     
+    apigClient.usersUserIdPatch = function (params, body, additionalParams) {
+        if(additionalParams === undefined) { additionalParams = {}; }
+        
+        apiGateway.core.utils.assertParametersDefined(params, ['userId', 'body'], ['body']);
+        
+        var usersUserIdPatchRequest = {
+            verb: 'patch'.toUpperCase(),
+            path: pathComponent + uritemplate('/users/{userId}').expand(apiGateway.core.utils.parseParametersToObject(params, ['userId', ])),
+            headers: apiGateway.core.utils.parseParametersToObject(params, []),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
+            body: body
+        };
+        
+        
+        return apiGatewayClient.makeRequest(usersUserIdPatchRequest, authType, additionalParams, config.apiKey);
+    };
+    
+    
     apigClient.usersUserIdProfileGet = function (params, body, additionalParams) {
         if(additionalParams === undefined) { additionalParams = {}; }
         
