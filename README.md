@@ -10,12 +10,10 @@
 * [dev](https://js7pyl1b87.execute-api.eu-central-1.amazonaws.com/dev) - js7pyl1b87.execute-api.eu-central-1.amazonaws.com/dev
 
 # Implementation progress
-These endpoints have been implemented and can be tested for frontend integration
-* POST - `/users`
-* GET - `/users/{userId}`
-* POST - `/organisations`
-* POST - `/requests`
-* GET - `/requests/{requestId}`
-* GET - `/qualifications`
+missing: 
+* POST - /requests/{requestId}/invite  
+
+Everything else is implemented
+
 
 more info about progress [here](https://github.com/orgs/Helfer-Portal/projects/3)

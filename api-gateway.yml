@@ -10,7 +10,7 @@ servers:
   - url: "https://js7pyl1b87.execute-api.eu-central-1.amazonaws.com/{basePath}"
     variables:
       basePath:
-        default: "dev"
+        default: "/dev"
 tags:
   - name: "User"
   - name: "Organisation"
@@ -48,23 +48,6 @@ paths:
           description: "invitation sent"
           content: {}
   /users:
-    get:
-      tags:
-        - "User"
-      summary: "Returns all users"
-      responses:
-        400:
-          description: "A required parameter is missing or invalid"
-          content: {}
-        500:
-          description: "Error while getting users"
-          content: {}
-        200:
-          description: "List of users"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ArrayOfuser"
     post:
       tags:
         - "User"
@@ -127,36 +110,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/request"
-    delete:
-      tags:
-        - "Request"
-      summary: "Remove participant from request"
-      parameters:
-        - name: "userId"
-          in: "path"
-          description: "ID of the request to get"
-          required: true
-          schema:
-            type: "string"
-        - name: "requestId"
-          in: "path"
-          description: "ID of the request to get"
-          required: true
-          schema:
-            type: "string"
-      responses:
-        400:
-          description: "A required parameter is missing or invalid"
-          content: {}
-        500:
-          description: "Error while getting request"
-          content: {}
-        200:
-          description: "Returned request"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/request"
   /requests/{requestId}:
     get:
       tags:
@@ -206,55 +159,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/request"
-  /users/{userId}/profile:
-    get:
-      tags:
-        - "User"
-      summary: "Returns a user's profile"
-      parameters:
-        - name: "userId"
-          in: "path"
-          description: "ID of the user's profile to get"
-          required: true
-          schema:
-            type: "string"
-      responses:
-        400:
-          description: "A required parameter is missing or invalid"
-          content: {}
-        500:
-          description: "Error while getting a user from database"
-          content: {}
-        200:
-          description: "Get successful"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/profile"
-    patch:
-      tags:
-        - "User"
-      summary: "Update a user's profile"
-      parameters:
-        - name: "userId"
-          in: "path"
-          description: "ID of the user's profile to get"
-          required: true
-          schema:
-            type: "string"
-      responses:
-        400:
-          description: "A required parameter is missing or invalid"
-          content: {}
-        500:
-          description: "Error while getting a user from database"
-          content: {}
-        200:
-          description: "Get successful"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/profile"
   /geopoint:
     post:
       requestBody:
@@ -278,7 +182,21 @@ paths:
     get:
       security:
         - cognito-authorizer: []
-    options: {}
+    options:
+      responses:
+        200:
+          description: "200 response"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content: {}
   /qualifications:
     get:
       tags:
@@ -290,6 +208,10 @@ paths:
           content: {}
         200:
           description: "Array of qualifications"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
           content:
             application/json:
               schema:
@@ -396,6 +318,9 @@ paths:
               schema:
                 $ref: "#/components/schemas/ArrayOfrequest"
     post:
+      tags:
+        - "Organisation"
+      description: ""
       parameters:
         - name: "organisationId"
           in: "path"
@@ -513,6 +438,22 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/user"
+    patch:
+      tags:
+        - "User"
+      description: "Updates a User"
+      parameters:
+        - name: "userId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/profileData"
+        required: true
   /requests/{requestId}/volunteers:
     get:
       tags:
@@ -580,7 +521,7 @@ components:
           type: "string"
         country:
           type: "string"
-        location:
+        point:
           $ref: "#/components/schemas/location"
     ArrayOfresponseStatus:
       type: "array"
@@ -616,6 +557,9 @@ components:
         avatar:
           type: "string"
           description: "URL to user avatar"
+        travellingDistance:
+          type: "number"
+          description: "The distance in meters, the user is able to travel."
     organisation:
       type: "object"
       properties:
@@ -691,10 +635,10 @@ components:
       type: "object"
       properties:
         latitude:
-          type: "string"
+          type: "number"
           description: "Latitude"
         longitude:
-          type: "string"
+          type: "number"
           description: "Longitude"
     ArrayOforganisation:
       type: "array"
@@ -730,6 +674,9 @@ components:
         avatar:
           type: "string"
           description: "URL to user avatar"
+        travellingDistance:
+          type: "number"
+          description: "The distance in meters, the user is able to travel."
     requestData:
       required:
         - "address"
