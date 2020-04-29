@@ -29,7 +29,8 @@ Resources:
         Schema:
           - AttributeDataType: String
             Name: email
-            Required: True            
+            Required: True
+            Mutable: True
         VerificationMessageTemplate: 
           DefaultEmailOption: CONFIRM_WITH_LINK
           EmailMessageByLink: Welcome to Help On Spot! Please click the link below to verify your email address. {##Verify Email##} 
