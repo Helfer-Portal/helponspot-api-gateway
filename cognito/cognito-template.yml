@@ -3,11 +3,11 @@ Transform: 'AWS::Serverless-2016-10-31'
 
 Resources:
 
-  # User pool
+# User Pool
   HoSCognitoUserPool:
       Type: AWS::Cognito::UserPool
       Properties:
-        UserPoolName: help_on_spot_cognito_user_pool
+        UserPoolName: HoSUserPool
         AccountRecoverySetting:
           RecoveryMechanisms: 
               - Name: verified_email
@@ -28,7 +28,7 @@ Resources:
           CaseSensitive: True
         Schema:
           - AttributeDataType: String
-            Name: email
+            Name: 'email'
             Required: True
             Mutable: True
         VerificationMessageTemplate: 
@@ -38,23 +38,20 @@ Resources:
         AutoVerifiedAttributes:
           - email
 
-  # A sample admin group
   HoSCognitoUserPoolAdminGroup:
     Type: AWS::Cognito::UserPoolGroup
     Properties: 
       GroupName: admin
-      Description: A group for users with admin privilages
-      #RoleArn: String # create a role for Admin group
+      Description: A group for users with admin privileges
+      RoleArn: !GetAtt HoSCognitoAdminRole.Arn
       UserPoolId: !Ref HoSCognitoUserPool          
 
-  # The domain settings
   HoSCognitoUserPoolDomain:
     Type: AWS::Cognito::UserPoolDomain
     Properties: 
-      Domain: helponspot
+      Domain: helponspotusers
       UserPoolId: !Ref HoSCognitoUserPool
 
-  # Google identity provider
   GoogleIdentityProvider:
     Type: AWS::Cognito::UserPoolIdentityProvider
     Properties:
@@ -68,7 +65,6 @@ Resources:
       AttributeMapping:
         email: email
 
-  # Amazon identity provider
   AmazonIdentityProvider:
     Type: AWS::Cognito::UserPoolIdentityProvider
     Properties:
@@ -82,7 +78,6 @@ Resources:
       AttributeMapping:
         email: email
 
-  # User pool client
   HoSCognitoUserPoolClient:
     Type: AWS::Cognito::UserPoolClient
     DependsOn: 
@@ -115,11 +110,172 @@ Resources:
         - Google
         - LoginWithAmazon
 
+# Identity Pool
+  HoSCognitoIdentityPool:
+    Type: AWS::Cognito::IdentityPool
+    Properties:
+      AllowUnauthenticatedIdentities: false
+      IdentityPoolName: HoSIdentityPool
+      CognitoIdentityProviders:
+        - ClientId: !Ref HoSCognitoUserPoolClient
+          ProviderName: !GetAtt HoSCognitoUserPool.ProviderName
+
+  HoSCognitoIdentityPoolRoles:
+    Type: AWS::Cognito::IdentityPoolRoleAttachment
+    Properties:
+      IdentityPoolId: !Ref HoSCognitoIdentityPool
+      RoleMappings:
+        HoSUserPool:
+          Type: Token
+          AmbiguousRoleResolution: AuthenticatedRole
+          IdentityProvider: 
+            !Sub 
+              - 'cognito-idp.${AWS::Region}.amazonaws.com/${CognitoUserPool}:${AppClientId}'
+              - CognitoUserPool: !Ref HoSCognitoUserPool
+                AppClientId: !Ref HoSCognitoUserPoolClient
+      Roles:
+        'authenticated': !GetAtt HoSCognitoAuthRole.Arn
+        'unauthenticated': !GetAtt HoSCognitoUnauthRole.Arn
+
+  HoSCognitoUnauthRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: HoSCognitoUnauthRole 
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Federated: cognito-identity.amazonaws.com
+          Action: sts:AssumeRoleWithWebIdentity
+          Condition:
+            StringEquals:
+              cognito-identity.amazonaws.com:aud:
+              - !Ref HoSCognitoIdentityPool
+            ForAnyValue:StringLike:
+              cognito-identity.amazonaws.com:amr: unauthenticated
+
+  HoSCognitoUnauthPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: HoSCognitoUnauthPolicy
+      Roles:
+        - !Ref HoSCognitoUnauthRole 
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Action:
+          - mobileanalytics:PutEvents
+          - cognito-sync:*
+          Resource:
+          - '*'
+
+  HoSCognitoAuthRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: HoSCognitoAuthRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Federated: cognito-identity.amazonaws.com
+          Action: sts:AssumeRoleWithWebIdentity
+          Condition:
+            StringEquals:
+              cognito-identity.amazonaws.com:aud:
+              - !Ref HoSCognitoIdentityPool
+            ForAnyValue:StringLike:
+              cognito-identity.amazonaws.com:amr: authenticated
+
+  HoSCognitoAuthPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: HoSCognitoAuthPolicy
+      Roles:
+        - !Ref HoSCognitoAuthRole
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'mobileanalytics:PutEvents'
+              - 'cognito-sync:*'
+              - 'cognito-identity:*'
+            Resource:
+              - '*'
+          - Effect: Allow
+            Action:
+              - 'execute-api:Invoke'
+            Resource:
+              - 'arn:aws:execute-api:eu-central-1:198891906952:js7pyl1b87/*/POST/geopoint'
+              - 'arn:aws:execute-api:eu-central-1:198891906952:js7pyl1b87/*/GET/organisations'
+              - 'arn:aws:execute-api:eu-central-1:198891906952:js7pyl1b87/*/POST/organisations'
+              - 'arn:aws:execute-api:eu-central-1:198891906952:js7pyl1b87/*/DELETE/organisations/*'
+              - 'arn:aws:execute-api:eu-central-1:198891906952:js7pyl1b87/*/GET/organisations/*'
+              - 'arn:aws:execute-api:eu-central-1:198891906952:js7pyl1b87/*/GET/organisations/*/requests'
+              - 'arn:aws:execute-api:eu-central-1:198891906952:js7pyl1b87/*/POST/organisations/*/requests'
+              - 'arn:aws:execute-api:eu-central-1:198891906952:js7pyl1b87/*/GET/qualifications'
+              - 'arn:aws:execute-api:eu-central-1:198891906952:js7pyl1b87/*/DELETE/requests/*'
+              - 'arn:aws:execute-api:eu-central-1:198891906952:js7pyl1b87/*/GET/requests/*'
+              - 'arn:aws:execute-api:eu-central-1:198891906952:js7pyl1b87/*/POST/requests/*/invite'
+              - 'arn:aws:execute-api:eu-central-1:198891906952:js7pyl1b87/*/GET/requests/*/volunteers'
+              - 'arn:aws:execute-api:eu-central-1:198891906952:js7pyl1b87/*/PUT/requests/*/volunteers/*'
+              - 'arn:aws:execute-api:eu-central-1:198891906952:js7pyl1b87/*/POST/users'
+              - 'arn:aws:execute-api:eu-central-1:198891906952:js7pyl1b87/*/DELETE/users/*'
+              - 'arn:aws:execute-api:eu-central-1:198891906952:js7pyl1b87/*/GET/users/*'
+              - 'arn:aws:execute-api:eu-central-1:198891906952:js7pyl1b87/*/PATCH/users/*'
+              - 'arn:aws:execute-api:eu-central-1:198891906952:js7pyl1b87/*/GET/users/*/requests'
+          - Effect: Deny
+            Action:
+              - 'execute-api:Invoke'
+            Resource:
+              - 'arn:aws:execute-api:eu-central-1:198891906952:js7pyl1b87/*/GET/ping'
+              - 'arn:aws:execute-api:eu-central-1:198891906952:js7pyl1b87/*/OPTIONS/ping'
+
+  HoSCognitoAdminRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: HoSCognitoAdminRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Federated: cognito-identity.amazonaws.com
+          Action: sts:AssumeRoleWithWebIdentity
+          Condition:
+            StringEquals:
+              cognito-identity.amazonaws.com:aud:
+              - !Ref HoSCognitoIdentityPool
+            ForAnyValue:StringLike:
+              cognito-identity.amazonaws.com:amr: authenticated
+
+  HoSCognitoAdminPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: HoSCognitoAdminPolicy
+      Roles:
+        - !Ref HoSCognitoAdminRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'execute-api:Invoke'
+            Resource:
+              !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:js7pyl1b87/*'
+
 Outputs:
-  CognitoUserPoolId:
+  HoSCognitoUserPoolId:
       Description: Cognito User Pool Id
       Value: !Ref HoSCognitoUserPool
 
-  CognitoUserPoolClientId:
+  HoSCognitoIdentityPoolId:
+    Description: Cognito Identity Pool Id
+    Value: !Ref HoSCognitoIdentityPool
+
+  HoSCognitoUserPoolClientId:
       Description: Cognito User Pool Client Id
       Value: !Ref HoSCognitoUserPoolClient
