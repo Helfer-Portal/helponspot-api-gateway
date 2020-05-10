@@ -17,6 +17,89 @@ tags:
   - name: "Request"
   - name: "Qualifications"
 paths:
+  /users/{userId}/requests:
+    get:
+      tags:
+        - "User"
+      summary: "Returns requests, which fit to a user (travelling distance and other\
+        \ filters)"
+      parameters:
+        - name: "requestType"
+          in: "query"
+          description: "The request type"
+          schema:
+            type: "string"
+        - name: "userId"
+          in: "path"
+          description: "ID of the user"
+          required: true
+          schema:
+            type: "string"
+        - name: "radius"
+          in: "query"
+          description: "Radius of search"
+          schema:
+            type: "string"
+        - name: "location"
+          in: "query"
+          description: "Custom location"
+          schema:
+            type: "string"
+      responses:
+        400:
+          description: "A required parameter is missing or invalid"
+          content: {}
+        500:
+          description: "Error while getting a user from database"
+          content: {}
+        200:
+          description: "Get successful"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArrayOfrequest"
+  /organisations/{organisationId}/requests:
+    get:
+      tags:
+        - "Organisation"
+      summary: "Returns all request of an organisation"
+      parameters:
+        - name: "organisationId"
+          in: "path"
+          description: "ID of the organisation"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        200:
+          description: "Requests"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArrayOfrequest"
+    post:
+      tags:
+        - "Organisation"
+      description: ""
+      parameters:
+        - name: "organisationId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/requestData"
+        required: true
+      responses:
+        200:
+          description: "Created organisations"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/request"
   /requests/{requestId}/invite:
     post:
       tags:
@@ -47,32 +130,55 @@ paths:
         200:
           description: "invitation sent"
           content: {}
-  /users:
-    post:
+  /organisations/{organisationId}:
+    get:
       tags:
-        - "User"
-      summary: "Creates a user"
-      description: "Creates a user."
-      requestBody:
-        description: "Contains the user information"
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/profileData"
-        required: true
+        - "Organisation"
+      summary: "Returns an organisation"
+      parameters:
+        - name: "organisationId"
+          in: "path"
+          description: "ID of the organisation to get"
+          required: true
+          schema:
+            type: "string"
       responses:
         400:
           description: "A required parameter is missing or invalid"
           content: {}
         500:
-          description: "Error while creating a user"
+          description: "Error while getting organisation"
           content: {}
-        201:
-          description: "Returns the newly created user"
+        200:
+          description: "Organisation"
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/profile"
+                $ref: "#/components/schemas/organisation"
+    delete:
+      tags:
+        - "Organisation"
+      summary: "Deletes an organisation"
+      parameters:
+        - name: "organisationId"
+          in: "path"
+          description: "ID of the organisation to delete"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        400:
+          description: "A required parameter is missing or invalid"
+          content: {}
+        500:
+          description: "Error while getting organisation"
+          content: {}
+        200:
+          description: "Organisation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/organisation"
   /requests/{requestId}/volunteers/{userId}:
     put:
       tags:
@@ -178,217 +284,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ArrayOflocation"
-  /ping:
-    get:
-      security:
-        - cognito-authorizer: []
-    options:
-      responses:
-        200:
-          description: "200 response"
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: "string"
-            Access-Control-Allow-Methods:
-              schema:
-                type: "string"
-            Access-Control-Allow-Headers:
-              schema:
-                type: "string"
-          content: {}
-  /qualifications:
-    get:
-      tags:
-        - "Qualifications"
-      summary: "Returns all qualifications"
-      responses:
-        500:
-          description: "Error while getting qualifications"
-          content: {}
-        200:
-          description: "Array of qualifications"
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: "string"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ArrayOfqualification"
-  /organisations:
-    get:
-      tags:
-        - "Organisation"
-      summary: "Returns all organisations"
-      responses:
-        400:
-          description: "A required parameter is missing or invalid"
-          content: {}
-        500:
-          description: "Error while getting organisations"
-          content: {}
-        200:
-          description: "List of organisations"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ArrayOforganisation"
-    post:
-      tags:
-        - "Organisation"
-      summary: "Creates an organization"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/organisationData"
-        required: true
-      responses:
-        400:
-          description: "A required parameter is missing or invalid"
-          content: {}
-        500:
-          description: "Error while getting organisations"
-          content: {}
-        200:
-          description: "Created organisations"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/organisation"
-  /users/{userId}/requests:
-    get:
-      tags:
-        - "User"
-      summary: "Returns requests, which fit to a user (travelling distance and other\
-        \ filters)"
-      parameters:
-        - name: "requestType"
-          in: "query"
-          description: "The request type"
-          schema:
-            type: "string"
-        - name: "userId"
-          in: "path"
-          description: "ID of the user"
-          required: true
-          schema:
-            type: "string"
-        - name: "radius"
-          in: "query"
-          description: "Radius of search"
-          schema:
-            type: "string"
-        - name: "location"
-          in: "query"
-          description: "Custom location"
-          schema:
-            type: "string"
-      responses:
-        400:
-          description: "A required parameter is missing or invalid"
-          content: {}
-        500:
-          description: "Error while getting a user from database"
-          content: {}
-        200:
-          description: "Get successful"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ArrayOfrequest"
-  /organisations/{organisationId}/requests:
-    get:
-      tags:
-        - "Organisation"
-      summary: "Returns all request of an organisation"
-      parameters:
-        - name: "organisationId"
-          in: "path"
-          description: "ID of the organisation"
-          required: true
-          schema:
-            type: "string"
-      responses:
-        200:
-          description: "Requests"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ArrayOfrequest"
-    post:
-      tags:
-        - "Organisation"
-      description: ""
-      parameters:
-        - name: "organisationId"
-          in: "path"
-          required: true
-          schema:
-            type: "string"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/requestData"
-        required: true
-      responses:
-        200:
-          description: "Created organisations"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/request"
-  /organisations/{organisationId}:
-    get:
-      tags:
-        - "Organisation"
-      summary: "Returns an organisation"
-      parameters:
-        - name: "organisationId"
-          in: "path"
-          description: "ID of the organisation to get"
-          required: true
-          schema:
-            type: "string"
-      responses:
-        400:
-          description: "A required parameter is missing or invalid"
-          content: {}
-        500:
-          description: "Error while getting organisation"
-          content: {}
-        200:
-          description: "Organisation"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/organisation"
-    delete:
-      tags:
-        - "Organisation"
-      summary: "Deletes an organisation"
-      parameters:
-        - name: "organisationId"
-          in: "path"
-          description: "ID of the organisation to delete"
-          required: true
-          schema:
-            type: "string"
-      responses:
-        400:
-          description: "A required parameter is missing or invalid"
-          content: {}
-        500:
-          description: "Error while getting organisation"
-          content: {}
-        200:
-          description: "Organisation"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/organisation"
   /users/{userId}:
     get:
       tags:
@@ -454,6 +349,25 @@ paths:
             schema:
               $ref: "#/components/schemas/profileData"
         required: true
+  /ping:
+    get:
+      security:
+        - sigv4: []
+    options:
+      responses:
+        200:
+          description: "200 response"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content: {}
   /requests/{requestId}/volunteers:
     get:
       tags:
@@ -479,6 +393,66 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ArrayOfresponseStatus"
+  /qualifications:
+    get:
+      tags:
+        - "Qualifications"
+      summary: "Returns all qualifications"
+      responses:
+        500:
+          description: "Error while getting qualifications"
+          content: {}
+        200:
+          description: "Array of qualifications"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArrayOfqualification"
+  /organisations:
+    get:
+      tags:
+        - "Organisation"
+      summary: "Returns all organisations"
+      responses:
+        400:
+          description: "A required parameter is missing or invalid"
+          content: {}
+        500:
+          description: "Error while getting organisations"
+          content: {}
+        200:
+          description: "List of organisations"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArrayOforganisation"
+    post:
+      tags:
+        - "Organisation"
+      summary: "Creates an organization"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/organisationData"
+        required: true
+      responses:
+        400:
+          description: "A required parameter is missing or invalid"
+          content: {}
+        500:
+          description: "Error while getting organisations"
+          content: {}
+        200:
+          description: "Created organisations"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/organisation"
 components:
   schemas:
     request:
@@ -700,7 +674,7 @@ components:
           description: "Date as ISO 8601 string"
         address:
           $ref: "#/components/schemas/address"
-        qualifications:
+        qualificationKeys:
           type: "array"
           items:
             type: "string"
@@ -748,8 +722,8 @@ components:
         country:
           type: "string"
   securitySchemes:
-    cognito-authorizer:
+    sigv4:
       type: "apiKey"
       name: "Authorization"
       in: "header"
-      x-amazon-apigateway-authtype: "cognito_user_pools"
+      x-amazon-apigateway-authtype: "awsSigv4"
