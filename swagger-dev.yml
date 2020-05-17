@@ -619,11 +619,6 @@ components:
       items:
         $ref: "#/components/schemas/organisation"
     profileData:
-      required:
-        - "email"
-        - "firstName"
-        - "lastName"
-        - "qualifications"
       type: "object"
       properties:
         lastName:
