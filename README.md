@@ -7,13 +7,23 @@
 * `/sdk/*` includes REST clients to communicate with the API
 
 # Stages
-* [dev](https://js7pyl1b87.execute-api.eu-central-1.amazonaws.com/dev) - js7pyl1b87.execute-api.eu-central-1.amazonaws.com/dev
+* stages can be considered as completely separate applications 
+* each stage has it's own:
+  * API gateway stage
+  * lambda function
+  * cognito user pool
 
-# Implementation progress
-missing: 
-* POST - /requests/{requestId}/invite  
+## dev
+* base url: `https://js7pyl1b87.execute-api.eu-central-1.amazonaws.com/dev`
+* user pool: `help_on_spot_cognito_user_pool_with_sam`
+* region ``eu-central-1``
 
-Everything else is implemented
+## prod
+* base url: `https://js7pyl1b87.execute-api.eu-central-1.amazonaws.com/prod`
+* user pool: `help_on_spot_prod`
+* region ``eu-central-1``
+
+
 
 
 more info about progress [here](https://github.com/orgs/Helfer-Portal/projects/3)
