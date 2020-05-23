@@ -9,4 +9,4 @@ For more information about how to write/update this template please check here: 
 
 Use the following [AWS CLI](https://aws.amazon.com/cli/) command to deploy the template to AWS:
 
-`aws cloudformation deploy --template-file cognito-template.yml --stack-name hos-cognito`
+`aws cloudformation deploy --template-file cognito-template.yml --stack-name HoSCognito --capabilities CAPABILITY_NAMED_IAM`
